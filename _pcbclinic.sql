@@ -109,7 +109,6 @@ CREATE TABLE `medicine` (
   `brand` varchar(255) NOT NULL,
   `quantity` int(255) NOT NULL,
   `expiration_date` date NOT NULL,
-  `name` varchar(255) NOT NULL,
   `generic_name` varchar(255) NOT NULL,
   `dosage` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

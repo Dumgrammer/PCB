@@ -337,12 +337,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <script>
 document.querySelector('form').addEventListener('submit', function(e) {
     const email = document.querySelector('input[name="email"]').value;
+    const password = document.querySelector('input[name="password"]').value;
+    const cpassword = document.querySelector('input[name="cpassword"]').value;
     if (!email.endsWith('@pcb.edu.ph')) {
         alert('Email must end with @pcb.edu.ph');
         e.preventDefault();
-    } else {
-       
-        
+    } else if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password)) {
+        alert('Password must be at least 8 characters and include both letters and numbers.');
+        e.preventDefault();
+    } else if (password !== cpassword) {
+        alert('Passwords do not match!');
+        e.preventDefault();
     }
 });
 

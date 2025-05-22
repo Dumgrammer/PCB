@@ -45,10 +45,11 @@
         $item_name=$_POST['item_name'];
         $quantity=$_POST['quantity'];
         $date=$_POST['date'];
+        $status=$_POST['status'];
 
     
 
-                $sql1="insert into equipment(item_name,quantity,date) values('$item_name','$quantity','$date');";
+                $sql1="insert into equipment(item_name,quantity,date,status) values('$item_name','$quantity','$date','$status');";
                 $database->query($sql1);
 
 

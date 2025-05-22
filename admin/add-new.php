@@ -62,6 +62,12 @@
                 $database->query($sql1);
                 $database->query($sql2);
 
+                // Also add the doctor to the webuser table
+                $result2 = $database->query("SELECT * FROM webuser WHERE email='$email'");
+                if($result2->num_rows==0){
+                    $database->query("INSERT INTO webuser(email,usertype) VALUES('$email','d')");
+                }
+
                 //echo $sql1;
                 //echo $sql2;
                 $error= '4';

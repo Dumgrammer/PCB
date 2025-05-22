@@ -40,12 +40,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $item_name = $_POST['item_name'] ?? '';
     $quantity = $_POST['quantity'] ?? '';
     $date = $_POST['date'] ?? '';
+    $status = $_POST['status'] ?? '';
 
     if ($id) {
         // Use prepared statement for secure update
-        $stmt = $database->prepare("UPDATE equipment SET item_name = ?, quantity = ?, date = ? WHERE id = ?");
+        $stmt = $database->prepare("UPDATE equipment SET item_name = ?, quantity = ?, date = ?, status = ? WHERE id = ?");
         if ($stmt) {
-            $stmt->bind_param("sisi", $item_name, $quantity, $date, $id);
+            $stmt->bind_param("sissi", $item_name, $quantity, $date, $status, $id);
 
             if ($stmt->execute()) {
                 $error = '4'; // success

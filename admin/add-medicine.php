@@ -37,37 +37,33 @@
     //import database
     include("../connection.php");
 
-
+    $error = 0;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $brand_name = trim($_POST['brand_name']);
-    $generic_name = trim($_POST['generic_name']);
-    $quantity = intval($_POST['quantity']);
-    $dosage = trim($_POST['dosage']);
-    $expiration_date = $_POST['expiration_date'];
+        $appoid = $_POST['appoid'];
+        $medicine = $_POST['medicine'];
+        $dosage = $_POST['dosage'];
+        $instructions = $_POST['instructions'];
 
-    // Optional: basic validation
-    if (!$brand_name || !$generic_name || !$quantity || !$dosage || !$expiration_date) {
-        die("All fields are required.");
-    }
+        // Get patient ID from appointment
+        $appq = $database->query("SELECT pid FROM appointment WHERE appoid='$appoid'");
+        $app = $appq->fetch_assoc();
+        $pid = $app['pid'];
 
-    $stmt = $database->prepare("INSERT INTO medicine (brand_name, generic_name, quantity, dosage, expiration_date) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssiss", $brand_name, $generic_name, $quantity, $dosage, $expiration_date);
-
-    if ($stmt->execute()) {
-        echo "Medicine record inserted successfully.";
+        // Insert into history table
+        $sql = "INSERT INTO history (appoid, pid, medicine, dosage, instructions, date_given) 
+                VALUES ('$appoid', '$pid', '$medicine', '$dosage', '$instructions', NOW())";
+        
+        if ($database->query($sql)) {
+            header("Location: appointment.php?action=view&id=$appoid&status=success");
+        } else {
+            header("Location: appointment.php?action=view&id=$appoid&error=" . urlencode($database->error));
+        }
+        exit;
     } else {
-        echo "Error inserting record: " . $stmt->error;
+        header("Location: appointment.php");
+        exit;
     }
-
-    $stmt->close();
-}
-
-                
-    
-    
-           }
-    header("location: medicine.php?action=add&error=".$error);
 
     ?>
     

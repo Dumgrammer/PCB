@@ -47,15 +47,33 @@
 
     session_start();
 
-    if(isset($_SESSION["user"])){
-        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='d'){
-            header("location: ../login.php");
-        }else{
-            $useremail=$_SESSION["user"];
-        }
+    // Add this debugging code temporarily
+    error_log("Doctor session check - User: " . (isset($_SESSION["user"]) ? $_SESSION["user"] : "not set") . 
+             ", Usertype: " . (isset($_SESSION["usertype"]) ? $_SESSION["usertype"] : "not set"));
 
-    }else{
+    if(isset($_SESSION["user"]) && isset($_SESSION["usertype"])){
+        if($_SESSION["usertype"] == "d"){
+            $useremail = $_SESSION["user"];
+            
+            // Verify this email exists in the doctor table
+            $check_doctor = $database->query("SELECT * FROM doctor WHERE docemail='$useremail'");
+            if($check_doctor->num_rows != 1){
+                // Doctor email not found in database
+                error_log("Doctor email not found in database: $useremail");
+                header("location: ../login.php");
+                exit();
+            }
+        } else {
+            // Not a doctor type
+            error_log("Not a doctor usertype: " . $_SESSION["usertype"]);
+            header("location: ../login.php");
+            exit();
+        }
+    } else {
+        // No session
+        error_log("No valid session for doctor");
         header("location: ../login.php");
+        exit();
     }
     
 

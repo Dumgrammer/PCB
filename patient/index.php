@@ -204,7 +204,7 @@
                         echo $today;
                         
                         
-                        $patientrow = $database->query("select  * from  patient;");
+                        $patientrow = $database->query("select  * from  pending_patient;");
                         $doctorrow = $database->query("select  * from  doctor;");
                         $appointmentrow = $database->query("select  * from  appointment where appodate>='$today';");
                         $schedulerow = $database->query("select  * from  schedule where scheduledate='$today';");

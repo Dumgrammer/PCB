@@ -1,72 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-<meta name="author" content="GinaFAcuna">
+    <meta name="author" content="GinaFAcuna">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/animations.css">  
+    <link rel="stylesheet" href="../css/animations.css">
 
-   <link rel="icon" href="../img/PCB.png">
-      
-    <link rel="stylesheet" href="../css/main.css">  
+    <link rel="icon" href="../img/PCB.png">
+
+    <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-        
+
     <title>PCB CLINIC</title>
     <style>
-        .dashbord-tables{
+        .dashbord-tables {
             animation: transitionIn-Y-over 0.5s;
         }
-        .filter-container{
-            animation: transitionIn-Y-bottom  0.5s;
-        }
-        .sub-table{
+
+        .filter-container {
             animation: transitionIn-Y-bottom 0.5s;
         }
-        
 
-        .menu img{
+        .sub-table {
+            animation: transitionIn-Y-bottom 0.5s;
+        }
+
+
+        .menu img {
             width: 70%;
             padding: 10%;
         }
 
 
-    .card{
+        .card {
 
             background-image: url(../img/bgdash.jpg);
             background-size: cover;
-        
-    }
 
- .menu-text {
-    font-size: 16px;
-    font-weight: 500;
-    color: #333;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 0;
-}
+        }
 
-    .menu-text i.material-symbols-outlined {
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .menu-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0;
+        }
 
-    .menu-text i.custom-icon img {
-    width: 24px;
-    height: 24px;
-    display: block;
-    object-fit: contain;
-    opacity: 0.8;
-}
+        .menu-text i.material-symbols-outlined {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-text i.custom-icon img {
+            width: 24px;
+            height: 24px;
+            display: block;
+            object-fit: contain;
+            opacity: 0.8;
+        }
     </style>
 </head>
+
 <body>
     <?php
 
@@ -74,160 +78,185 @@
 
     session_start();
 
-    if(isset($_SESSION["user"])){
-        if(($_SESSION["user"])=="" or $_SESSION['usertype']!='a'){
+    if (isset($_SESSION["user"])) {
+        if (($_SESSION["user"]) == "" or $_SESSION['usertype'] != 'a') {
             header("location: ../login.php");
         }
-
-    }else{
+    } else {
         header("location: ../login.php");
     }
-    
+
 
     //import database
     include("../connection.php");
 
-    
+    $today = date('Y-m-d');
+    $minDate = date('Y-m-d', strtotime('+7 days')); // At least 7 days from today
+    $maxDate = date('Y-m-d', strtotime('+1 year'));
+
     ?>
     <div class="container">
 
         <div class="menu">
             <table class="menu-container" border="0">
                 <tr>
-               <td>
-                  <table border="0" class="profile-container">
-                     <tr>
-                        <td>
-                           <img src="../img/PCB.png" alt="" >
-                        </td>
-                       
-                     </tr>
-                     
-                    </table>
-                    </td>
-                </tr>
-                <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-dashbord menu-active menu-icon-dashbord-active" >
+                    <td>
+                        <table border="0" class="profile-container">
+                            <tr>
+                                <td>
+                                    <img src="../img/PCB.png" alt="">
+                                </td>
 
-                        <a href="index.php" class="non-style-link-menu non-style-link-menu-active"><div>
-                           <p class="menu-text">
-                            <i class="material-symbols-outlined"> dashboard</i>
-                        Dashboard</p></a></div></a>
-                    </td>
-                     </tr>
-                    <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-medicine">
-                        <a href="medicine.php" class="non-style-link-menu">
-                            <div><p class="menu-text"><i class="material-symbols-outlined"> <img src="../img/icons/medicine-icon.png" style="width: 28px;
-                            opacity: 70%;"></i>Medicine</p></a></div>
+                            </tr>
+
+                        </table>
                     </td>
                 </tr>
                 <tr class="menu-row">
-    <td class="menu-btn menu-icon-equipment">
-        <a href="equipment.php" class="non-style-link-menu">
-            <div>
-                <p class="menu-text">
-                    <i class="custom-icon"><img src="../img/icons/equipment-icon.png" alt="Equipment Icon" style="opacity: 75%;"></i>
-                    Equipment
-                </p>
-            </div>
-        </a>
-    </td>
-</tr>
-                 
-                <tr class="menu-row">
-    <td class="menu-btn menu-icon-patient">
-        <a href="patient.php" class="non-style-link-menu">
-            <div>
-                <p class="menu-text"><i class="material-symbols-outlined">face</i>Patients</p>
-            </div>
-        </a>
-    </td>
-</tr>
-                <tr class="menu-row" >
-                    <td class="menu-btn menu-icon-settings   ">
-                        <a href="#" class="non-style-link-menu">
-                            <div><p class="menu-text"><i class="material-symbols-outlined">settings</i>Settings</p></a></div>
-                    </td>
-                </tr>
-                <tr  class="menu-row">
-                    <td class="menu-btn menu-icon-settings">
-                        <a href="../logout.php" class="non-style-link-menu">
+                    <td class="menu-btn menu-icon-dashbord menu-active menu-icon-dashbord-active">
+
+                        <a href="index.php" class="non-style-link-menu non-style-link-menu-active">
                             <div>
-                      <p class="menu-text"><i class="material-symbols-outlined">power_settings_new</i>Logout</p></a></div>
-                    </td> 
-               </tr>
+                                <p class="menu-text">
+                                    <i class="material-symbols-outlined"> dashboard</i>
+                                    Dashboard
+                                </p>
+                        </a>
+        </div></a>
+        </td>
+        </tr>
+        <tr class="menu-row">
+            <td class="menu-btn menu-icon-medicine">
+                <a href="medicine.php" class="non-style-link-menu">
+                    <div>
+                        <p class="menu-text"><i class="material-symbols-outlined"> <img src="../img/icons/medicine-icon.png" style="width: 28px;
+                            opacity: 70%;"></i>Medicine</p>
+                </a>
+    </div>
+    </td>
+    </tr>
+    <tr class="menu-row">
+        <td class="menu-btn menu-icon-equipment">
+            <a href="equipment.php" class="non-style-link-menu">
+                <div>
+                    <p class="menu-text">
+                        <i class="custom-icon"><img src="../img/icons/equipment-icon.png" alt="Equipment Icon" style="opacity: 75%;"></i>
+                        Equipment
+                    </p>
+                </div>
+            </a>
+        </td>
+    </tr>
 
-            </table>
-        </div>
-        <div class="dash-body">
-   <table border="0" width="100%" style=" border-spacing: 0;margin:0;padding:0;">
-               
+    <tr class="menu-row">
+        <td class="menu-btn menu-icon-appointment">
+            <a href="appointment.php" class="non-style-link-menu">
+                <div>
+                    <p class="menu-text">
+                        <i class="custom-icon"><img src="../img/icons/appointment-icon.png" alt="Equipment Icon" style="opacity: 75%;"></i>
+                        Appointment
+                    </p>
+                </div>
+            </a>
+        </td>
+    </tr>
 
-                     <tr>
+    <tr class="menu-row">
+        <td class="menu-btn menu-icon-patient">
+            <a href="patient.php" class="non-style-link-menu">
+                <div>
+                    <p class="menu-text"><i class="material-symbols-outlined">face</i>Patients</p>
+                </div>
+            </a>
+        </td>
+    </tr>
+    <tr class="menu-row">
+        <td class="menu-btn menu-icon-settings   ">
+            <a href="#" class="non-style-link-menu">
+                <div>
+                    <p class="menu-text"><i class="material-symbols-outlined">settings</i>Settings</p>
+            </a></div>
+        </td>
+    </tr>
+    <tr class="menu-row">
+        <td class="menu-btn menu-icon-settings">
+            <a href="../logout.php" class="non-style-link-menu">
+                <div>
+                    <p class="menu-text"><i class="material-symbols-outlined">power_settings_new</i>Logout</p>
+            </a></div>
+        </td>
+    </tr>
+
+    </table>
+    </div>
+    <div class="dash-body">
+        <table border="0" width="100%" style=" border-spacing: 0;margin:0;padding:0;">
+
+
+            <tr>
 
                 <div class="header-content">
-                <nav class="navbar navbar-expand">
-          <div class="collapse navbar-collapse justify-content-between">
-            <div class="header-left">
-                        <div class="dashboard_bar" style="text-transform: capitalize;"></div>
-                    </div>
-                    <ul class="navbar-nav header-right">
-                        <li>
-                        <!-- <i class="fa-regular fa-bell"></i> -->
-                    </li>
-                    <li> <!-- <i class="fa-regular fa-message"></i> --></li>
-                    <li>
-                      <!-- <i class="fa-solid fa-gift"></i>   -->  
-                    </li>
-                       
-                  <?php
-                 $email = $_SESSION['user'];
-                $query = "SELECT * FROM admin WHERE aemail = '$email'";
-                $result = $database->query($query);
+                    <nav class="navbar navbar-expand">
+                        <div class="collapse navbar-collapse justify-content-between">
+                            <div class="header-left">
+                                <div class="dashboard_bar" style="text-transform: capitalize;"></div>
+                            </div>
+                            <ul class="navbar-nav header-right">
+                                <li>
+                                    <!-- <i class="fa-regular fa-bell"></i> -->
+                                </li>
+                                <li> <!-- <i class="fa-regular fa-message"></i> --></li>
+                                <li>
+                                    <!-- <i class="fa-solid fa-gift"></i>   -->
+                                </li>
 
-                if ($result && $result->num_rows == 1) {
-                    $admin = $result->fetch_assoc();
-                    $aname = $admin['aname']; // Replace this with actual name column if available
-                    $aemail = $admin['aemail'];
-                } else {
-                    $aname = "Unknown";
-                    $aemail = "No email";
-                }
-                ?>
+                                <?php
+                                $email = $_SESSION['user'];
+                                $query = "SELECT * FROM admin WHERE aemail = '$email'";
+                                $result = $database->query($query);
 
-                <div class="profile dropdown">
-                    <img src="../img/profile.png" width="45px">
-                    <div class="toggel">
-                        <span><?= htmlspecialchars($aname) ?></span><br>
-                        <span><?= htmlspecialchars($aemail) ?></span>
-                    </div>
+                                if ($result && $result->num_rows == 1) {
+                                    $admin = $result->fetch_assoc();
+                                    $aname = $admin['aname']; // Replace this with actual name column if available
+                                    $aemail = $admin['aemail'];
+                                } else {
+                                    $aname = "Unknown";
+                                    $aemail = "No email";
+                                }
+                                ?>
+
+                                <div class="profile dropdown">
+                                    <img src="../img/profile.png" width="45px">
+                                    <div class="toggel">
+                                        <span><?= htmlspecialchars($aname) ?></span><br>
+                                        <span><?= htmlspecialchars($aemail) ?></span>
+                                    </div>
+                                </div>
+
+
+                            </ul>
+                        </div>
+                    </nav>
                 </div>
-                  
-               
-                    </ul>
-                </div>
-            </nav>
-        </div>
-                   <!--  <td width="13%">
+                <!--  <td width="13%">
                         <a href="doctors.php" ><button  class="login-btn btn-primary-soft btn btn-icon-back"  style="padding-top:11px;padding-bottom:11px;margin-left:20px;width:125px"><font class="tn-in-text">Back</font></button></a>
                     </td> -->
-                    <td>
-                        
-                       <!--  <form action="" method="post" class="header-search">
+                <td>
+
+                    <!--  <form action="" method="post" class="header-search">
 
                            
                             <?php
-                                //echo '<datalist id="doctors">';
-                               // $list11 = $database->query("select  docname,docemail from  doctor;");
+                            //echo '<datalist id="doctors">';
+                            // $list11 = $database->query("select  docname,docemail from  doctor;");
 
-                                //for ($y=0;$y<$list11->num_rows;$y++){
-                                    //$row00=$list11->fetch_assoc();
-                                   // $d=$row00["docname"];
-                                   // $c=$row00["docemail"];
-                                   // echo "<option value='$d'><br/>";
-                                   // echo "<option value='$c'><br/>";
-                               // };
+                            //for ($y=0;$y<$list11->num_rows;$y++){
+                            //$row00=$list11->fetch_assoc();
+                            // $d=$row00["docname"];
+                            // $c=$row00["docemail"];
+                            // echo "<option value='$d'><br/>";
+                            // echo "<option value='$c'><br/>";
+                            // };
 
                             //echo ' </datalist>';
                             ?>
@@ -237,72 +266,73 @@
                         
                         </form>
                          -->
-                    </td>
-                    <!-- <td width="15%">
+                </td>
+                <!-- <td width="15%">
                         <p style="font-size: 14px;color: rgb(119, 119, 119);padding: 0;margin: 0;text-align: right;">
                             Today's Date
                         </p>
                         <p class="heading-sub12" style="padding: 0;margin: 0;">
-                            <?php 
-                        date_default_timezone_set('Asia/Kolkata');
+                            <?php
+                            date_default_timezone_set('Asia/Kolkata');
 
-                        $date = date('Y-m-d');
-                        echo $date;
-                        ?>
+                            $date = date('Y-m-d');
+                            echo $date;
+                            ?>
                         </p>
                     </td> -->
-                   <!--  <td width="10%">
+                <!--  <td width="10%">
                         <button  class="btn-label"  style="display: flex;justify-content: center;align-items: center;"><img src="../img/calendar.svg" width="100%"></button>
                     </td>
  -->
 
-                </tr>
-               
-                <tr >
-                    <!-- <td colspan="2" style="padding-top:30px;">
+            </tr>
+
+            <tr>
+                <!-- <td colspan="2" style="padding-top:30px;">
                         <p class="heading-main12" style="margin-left: 45px;font-size:20px;color:rgb(49, 49, 49)">Add New Medicine</p>
                     </td> -->
-                    
-                </tr>
 
-                <tr style="background: #dae1f3;">
-            <?php 
-                  $list11 = $database->query("select  brand,quantity from  medicine;");
+            </tr>
 
-                                for ($y=0;$y<$list11->num_rows;$y++){
-                                    $row00=$list11->fetch_assoc();} ?>   
+            <tr style="background: #dae1f3;">
+                <?php
+                $list11 = $database->query("select  brand,quantity from  medicine;");
 
-                    <td>
-    <p style="font-size: 23px;padding-left:30px;font-weight: 400; background: #dae1f3; margin-bottom: 0;padding: 5px;margin-top: 0;font-size: 20px;  color: #444;">All Medicine (<?php echo $list11->num_rows; ?>)</p>
+                for ($y = 0; $y < $list11->num_rows; $y++) {
+                    $row00 = $list11->fetch_assoc();
+                } ?>
 
-             <td >
-                         <form action="" method="post" class="header-search">
+                <td>
+                    <p style="font-size: 23px;padding-left:30px;font-weight: 400; background: #dae1f3; margin-bottom: 0;padding: 5px;margin-top: 0;font-size: 20px;  color: #444;">All Medicine (<?php echo $list11->num_rows; ?>)</p>
 
-                            <input type="search" name="search" class="input-text header-searchbar" placeholder="Search Medicine" list="medicine">&nbsp;&nbsp;
-                            
-                            <?php
-                                echo '<datalist id="medicine">';
-                               
-                                    $d=$row00["brand"];
-                                    $c=$row00["quantity"];
-                                    echo "<option value='$d'><br/>";
-                                    echo "<option value='$c'><br/>";
-                               
+                <td>
+                    <form action="" method="post" class="header-search">
 
-                            echo ' </datalist>';
-?>
-                            
-                       
-                            <input type="Submit" value="Search" class="login-btn btn-primary btn" style="padding-left: 25px;padding-right: 25px;padding-top: 10px;padding-bottom: 10px;">
-                        
-                        </form>
-                            
-                    </td>
-                   
+                        <input type="search" name="search" class="input-text header-searchbar" placeholder="Search Medicine" list="medicine">&nbsp;&nbsp;
 
-                   <td style="background: #dae1f3; padding: 5px 30px; text-align: right;">
-  <a href="?action=add&id=none&error=0" class="non-style-link" title="Add Medicine"
-     style="
+                        <?php
+                        echo '<datalist id="medicine">';
+
+                        $d = $row00["brand"];
+                        $c = $row00["quantity"];
+                        echo "<option value='$d'><br/>";
+                        echo "<option value='$c'><br/>";
+
+
+                        echo ' </datalist>';
+                        ?>
+
+
+                        <input type="Submit" value="Search" class="login-btn btn-primary btn" style="padding-left: 25px;padding-right: 25px;padding-top: 10px;padding-bottom: 10px;">
+
+                    </form>
+
+                </td>
+
+
+                <td style="background: #dae1f3; padding: 5px 30px; text-align: right;">
+                    <a href="?action=add&id=none&error=0" class="non-style-link" title="Add Medicine"
+                        style="
        display: inline-flex;
        align-items: center;
        gap: 10px;
@@ -316,82 +346,82 @@
        text-decoration: none;
        position: relative;
      ">
-      <!-- Paste your chosen SVG here -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M20.07 4.93a5.25 5.25 0 0 0-7.43 0L3.22 14.35a4.5 4.5 0 0 0 6.36 6.36l9.42-9.42a5.25 5.25 0 0 0 0-7.43zm-8.29 9.17-1.42-1.42 5.66-5.66 1.42 1.42-5.66 5.66z"/>
-      </svg>
-      <span>Add Medicine</span>
-  </a>
-</td>
-
-
-                    
-                </tr>
-                <?php
-                    if($_POST){
-                        $keyword=$_POST["search"];
-                        
-                        $sqlmain= "select * from medicine where brand='$keyword' or quantity='$keyword' or quantity like '$keyword%' or quantity like '%$keyword' or quantity like '%$keyword%'";
-                    }else{
-                        $sqlmain= "select * from medicine order by id desc";
-
-                    }
+                        <!-- Paste your chosen SVG here -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M20.07 4.93a5.25 5.25 0 0 0-7.43 0L3.22 14.35a4.5 4.5 0 0 0 6.36 6.36l9.42-9.42a5.25 5.25 0 0 0 0-7.43zm-8.29 9.17-1.42-1.42 5.66-5.66 1.42 1.42-5.66 5.66z" />
+                        </svg>
+                        <span>Add Medicine</span>
+                    </a>
+                </td>
 
 
 
-                ?>
-                  
-                <tr>
-                   <td colspan="4">
-                       <center>
+            </tr>
+            <?php
+            if ($_POST) {
+                $keyword = $_POST["search"];
+
+                $sqlmain = "select * from medicine where brand='$keyword' or quantity='$keyword' or quantity like '$keyword%' or quantity like '%$keyword' or quantity like '%$keyword%'";
+            } else {
+                $sqlmain = "select * from medicine order by id desc";
+            }
+
+
+
+            ?>
+
+            <tr>
+                <td colspan="4">
+                    <center>
                         <div class="abc scroll">
-                        <table width="93%" class="sub-table scrolldown" border="0">
-                        <thead>
-                        <tr>
-                                <th class="table-headin">
-                              Name
-                                
-                                </th>  <th class="table-headin">
-                              Brand
-                                
-                                </th>
-                                <th class="table-headin">
-                              Generic Name
-                                
-                                </th>
-                                <th class="table-headin">
-                                    Quantity
-                                </th>
-                                <th class="table-headin">
-                              Dosage(ML)
-                                
-                                </th>
-                                <th class="table-headin">
-                              Expiration Date
-                                
-                                </th>
-                                <!-- <th class="table-headin">
+                            <table width="93%" class="sub-table scrolldown" border="0">
+                                <thead>
+                                    <tr>
+                                        <th class="table-headin">
+                                            Name
+
+                                        </th>
+                                        <th class="table-headin">
+                                            Brand
+
+                                        </th>
+                                        <th class="table-headin">
+                                            Generic Name
+
+                                        </th>
+                                        <th class="table-headin">
+                                            Quantity
+                                        </th>
+                                        <th class="table-headin">
+                                            Dosage(ML)
+
+                                        </th>
+                                        <th class="table-headin">
+                                            Expiration Date
+
+                                        </th>
+                                        <!-- <th class="table-headin">
                                     
                                     Category
                                     
                                 </th> -->
-                                 
-                                <th class="table-headin">
-                                    
-                                    Action
-                                    </th>
-                                </tr>
 
-                        </thead>
-                        <tbody class="data">
-                        
-                             <?php
+                                        <th class="table-headin">
 
-                                
-                                $result= $database->query($sqlmain);
+                                            Action
+                                        </th>
+                                    </tr>
 
-                                if($result->num_rows==0){
-                                    echo '<tr>
+                                </thead>
+                                <tbody class="data">
+
+                                    <?php
+
+
+                                    $result = $database->query($sqlmain);
+
+                                    if ($result->num_rows == 0) {
+                                        echo '<tr>
                                     <td colspan="6">
                                     <br><br><br><br>
                                     <center>
@@ -405,51 +435,48 @@
                                     <br><br><br><br>
                                     </td>
                                     </tr>';
-                                    
-                                }
-                                else{
-                                for ( $x=0; $x<$result->num_rows;$x++){
-                                    $row = $result->fetch_assoc();
-                                    $medid = $row["id"];
-                                    $brand = $row["brand"];
-                                    $quantity = $row["quantity"];
-                                    $expiration_date = $row["expiration_date"];
-                                    $name = $row["name"];
-                                    $generic_name = $row["generic_name"];
-                                    $dosage = $row["dosage"];
+                                    } else {
+                                        for ($x = 0; $x < $result->num_rows; $x++) {
+                                            $row = $result->fetch_assoc();
+                                            $medid = $row["id"];
+                                            $brand = $row["brand"];
+                                            $quantity = $row["quantity"];
+                                            $expiration_date = $row["expiration_date"];
+                                            $generic_name = $row["generic_name"];
+                                            $dosage = $row["dosage"];
 
-                                    /*$category=$row["category"];
+                                            /*$category=$row["category"];
                                     $spcil_res= $database->query("select category from medicine_category where id='$category'");
                                     $spcil_array= $spcil_res->fetch_assoc();
                                     $spcil_name=$spcil_array["category"];
-*/                                    echo '<tr>
-                                       <td> &nbsp;'.substr($name, 0, 30).'</td>
+*/
+                                            echo '<tr>
 
                                         <td>
-                                            '.substr($brand, 0, 20).'
+                                            ' . substr($brand, 0, 20) . '
                                         </td>
 
                                         <td>
-                                            '.substr($generic_name, 0, 20).'
+                                            ' . substr($generic_name, 0, 20) . '
                                         </td>
 
                                         <td>
-                                            '.substr($quantity, 0, 20).'
+                                            ' . substr($quantity, 0, 20) . '
                                         </td>
 
                                         <td>
-                                            '.substr($dosage, 0, 20).'ML
+                                            ' . substr($dosage, 0, 20) . 'ML
                                         </td>
 
                                         <td>
-                                            '.substr($expiration_date, 0, 20).'
+                                            ' . substr($expiration_date, 0, 20) . '
                                         </td>
 
                                       
 
                         <td>
                         <div style="display:flex;justify-content: center;">
-                 <a href="?action=edit&id='.$medid.'&error=0" class=" btn-primary btn button-icon" >
+                 <a href="?action=edit&id=' . $medid . '&error=0" class=" btn-primary btn button-icon" >
                         
                         <i  class="material-symbols-outlined">
 edit_square</i>
@@ -457,7 +484,7 @@ edit_square</i>
                        </a>
                         &nbsp;&nbsp;&nbsp;
 
-                        <a href="?action=view&id='.$medid.'" class=" btn-success btn button-icon">
+                        <a href="?action=view&id=' . $medid . '" class=" btn-success btn button-icon">
                         
                         <i class="material-symbols-outlined">visibility</i>
                      
@@ -465,39 +492,38 @@ edit_square</i>
                        &nbsp;&nbsp;&nbsp;
 
 
-                       <a href="?action=drop&id='.$medid.'&name='.$brand.'" class="btn-danger btn button-icon ">
+                       <a href="?action=drop&id=' . $medid . '&name=' . $brand . '" class="btn-danger btn button-icon ">
                       
                        <i class="material-symbols-outlined">delete</i>
                      </a>
                         </div>
                         </td>
                     </tr>';
-                                    
-                                }
-                            }
-                                 
-                            ?>
- 
-                            </tbody>
+                                        }
+                                    }
 
-                        </table>
+                                    ?>
+
+                                </tbody>
+
+                            </table>
                         </div>
-                        </center>
-                   </td> 
-                </tr>
-                       
-                        
-                        
-            </table>
-        </div>
+                    </center>
+                </td>
+            </tr>
+
+
+
+        </table>
     </div>
-    <?php 
-    if($_GET){
-        
-        $medid=$_GET["id"];
-        $action=$_GET["action"];
-        if($action=='drop'){
-            $nameget=$_GET["brand"];
+    </div>
+    <?php
+    if ($_GET) {
+
+        $medid = $_GET["id"];
+        $action = $_GET["action"];
+        if ($action == 'drop') {
+            $nameget = $_GET["brand"];
             echo '
             <div id="popup1" class="overlay">
                     <div class="popup">
@@ -509,7 +535,7 @@ edit_square</i>
                             
                         </div>
                         <div style="display: flex;justify-content: center;">
-                        <a href="delete-medicine.php?id='.$medid.'" class="non-style-link"><button  class="btn-primary btn"  style="display: flex;justify-content: center;align-items: center;margin:10px;padding:10px;"<font class="tn-in-text">&nbsp;Yes&nbsp;</font></button></a>&nbsp;&nbsp;&nbsp;
+                        <a href="delete-medicine.php?id=' . $medid . '" class="non-style-link"><button  class="btn-primary btn"  style="display: flex;justify-content: center;align-items: center;margin:10px;padding:10px;"<font class="tn-in-text">&nbsp;Yes&nbsp;</font></button></a>&nbsp;&nbsp;&nbsp;
 
                         <a href="medicine.php" class="non-style-link"><button  class="btn-primary btn"  style="display: flex;justify-content: center;align-items: center;margin:10px;padding:10px;"><font class="tn-in-text">&nbsp;&nbsp;No&nbsp;&nbsp;</font></button></a>
 
@@ -518,13 +544,13 @@ edit_square</i>
             </div>
             </div>
             ';
-        }elseif($action=='view'){
-            $sqlmain= "select * from medicine where id='$medid'";
-            $result= $database->query($sqlmain);
-            $row=$result->fetch_assoc();
-            $brand=$row["brand"];
-            $quantity=$row["quantity"];
-            $expiration_date=$row["expiration_date"];
+        } elseif ($action == 'view') {
+            $sqlmain = "select * from medicine where id='$medid'";
+            $result = $database->query($sqlmain);
+            $row = $result->fetch_assoc();
+            $brand = $row["brand"];
+            $quantity = $row["quantity"];
+            $expiration_date = $row["expiration_date"];
             $name = $row["name"];
             $generic_name = $row["generic_name"];
             $dosage = $row["dosage"];
@@ -547,16 +573,16 @@ edit_square</i>
                             <tr>
                             <td class="label-td" colspan="3">
         <label class="form-label">Name:</label><br>
-        <span>'.$name.'</span>
+        <span>' . $name . '</span>
     </td>
     <td class="label-td" colspan="3">
         <label class="form-label">Brand:</label><br>
-        <span> '.$brand.'</span>
+        <span> ' . $brand . '</span>
     </td>
 
 <td class="label-td" colspan="3">
         <label class="form-label">Generic Name:</label><br>
-        <span>'.$generic_name.'</span><br>
+        <span>' . $generic_name . '</span><br>
     </td>
     
 
@@ -568,16 +594,16 @@ edit_square</i>
 
     <td class="label-td" colspan="3">
         <label class="form-label">Quantity:</label><br>
-        <span>'.$quantity.'</span>
+        <span>' . $quantity . '</span>
     </td>
 
     <td class="label-td" colspan="3">
         <label class="form-label">Dosage:</label><br>
-        <span>'.$dosage.'</span>
+        <span>' . $dosage . '</span>
     </td>
     <td class="label-td" colspan="3">
         <label class="form-label">Expiration Date:</label><br>
-        <span>'.$expiration_date.'</span>
+        <span>' . $expiration_date . '</span>
     </td>
 </tr>
 
@@ -591,19 +617,17 @@ edit_square</i>
             </div>
             </div>
             ';
-        }
+        } elseif ($action == 'add') {
+            $error_1 = $_GET["error"];
+            $errorlist = array(
+                '1' => '<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Already have an account for this Email address.</label>',
+                '2' => '<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Password Confirmation Error! Reconfirm Password</label>',
+                '3' => '<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;"></label>',
+                '4' => "",
+                '0' => '',
 
-        elseif($action=='add'){
-                $error_1=$_GET["error"];
-                $errorlist= array(
-                    '1'=>'<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Already have an account for this Email address.</label>',
-                    '2'=>'<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Password Confirmation Error! Reconfirm Password</label>',
-                    '3'=>'<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;"></label>',
-                    '4'=>"",
-                    '0'=>'',
-
-                );
-                if($error_1!='4'){
+            );
+            if ($error_1 != '4') {
                 echo '
             <div id="popup1" class="overlay">
                     <div class="popup">
@@ -614,9 +638,9 @@ edit_square</i>
                         <div class="abc">
                         <table width="100%" class="sub-table scrolldown add-doc-form-container" border="0">
                         <tr>
-                                <td class="label-td" colspan="2">'.
-                                    $errorlist[$error_1]
-                                .'</td>
+                                <td class="label-td" colspan="2">' .
+                    $errorlist[$error_1]
+                    . '</td>
                             </tr>
                             <tr>
                                 <td>
@@ -639,15 +663,10 @@ edit_square</i>
 
     <td class="label-td" colspan="3">
         <label for="expiration_date" class="form-label">Expiration Date:</label><br>
-        <input type="date" name="expiration_date" class="input-text" required>
+        <input type="date" name="expiration_date" class="input-text" required min="' . $minDate . '" max="' . $maxDate . '">
     </td>
 </tr>
 <tr>
-    <td class="label-td" colspan="3">
-        <label for="name" class="form-label">Name:</label><br>
-        <input type="text" name="name" class="input-text" placeholder="Name" required>
-    </td>
-
     <td class="label-td" colspan="3">
         <label for="generic_name" class="form-label">Generic Name:</label><br>
         <input type="text" name="generic_name" class="input-text" placeholder="Generic Name" required>
@@ -681,8 +700,7 @@ edit_square</i>
             </div>
             </div>
             ';
-
-            }else{
+            } else {
                 echo '
                     <div id="popup1" class="overlay">
                             <div class="popup">
@@ -704,35 +722,35 @@ edit_square</i>
                     </div>
                     </div>
         ';
-            }  
-        }elseif($action=='edit'){
-            $sqlmain= "select * from medicine where id='$medid'";
-            $result= $database->query($sqlmain);
-            $row=$result->fetch_assoc();
-            $brand=$row["brand"];
-            $quantity=$row["quantity"];
-            $expiration_date=$row["expiration_date"];
+            }
+        } elseif ($action == 'edit') {
+            $sqlmain = "select * from medicine where id='$medid'";
+            $result = $database->query($sqlmain);
+            $row = $result->fetch_assoc();
+            $brand = $row["brand"];
+            $quantity = $row["quantity"];
+            $expiration_date = $row["expiration_date"];
             $name = $row["name"];
             $generic_name = $row["generic_name"];
             $dosage = $row["dosage"];
-           /* $category=$row["category"];
+            /* $category=$row["category"];
             
             $spcil_res= $database->query("select category from medicine_category where id='$category'");
             $spcil_array= $spcil_res->fetch_assoc();
             $spcil_name=$spcil_array["category"];*/
 
-            $error_1=$_GET["error"];
-                $errorlist= array(
-                    '1'=>'<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Already have an account for this Email address.</label>',
-                    '2'=>'<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Password Conformation Error! Reconform Password</label>',
-                    '3'=>'<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;"></label>',
-                    '4'=>"",
-                    '0'=>'',
+            $error_1 = $_GET["error"];
+            $errorlist = array(
+                '1' => '<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Already have an account for this Email address.</label>',
+                '2' => '<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Password Conformation Error! Reconform Password</label>',
+                '3' => '<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;"></label>',
+                '4' => "",
+                '0' => '',
 
-                );
+            );
 
-            if($error_1!='4'){
-                    echo '
+            if ($error_1 != '4') {
+                echo '
                     <div id="popup1" class="overlay">
                             <div class="popup">
                             <center>
@@ -742,9 +760,9 @@ edit_square</i>
                                 <div class="abc">
                                 <table width="80%" class="sub-table scrolldown add-doc-form-container" border="0">
                                 <tr>
-                                        <td class="label-td" colspan="2">'.
-                                            $errorlist[$error_1]
-                                        .'</td>
+                                        <td class="label-td" colspan="2">' .
+                    $errorlist[$error_1]
+                    . '</td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -756,22 +774,16 @@ edit_square</i>
                                         <td class="label-td" colspan="2">
                                             <form action="edit-medicine.php" method="POST" class="add-new-form">
                                             
-                                            <input type="hidden" value="'.$medid.'" name="id">
-                                            <input type="hidden" name="name" value="'.$name.'" >
+                                            <input type="hidden" value="' . $medid . '" name="id">
                                         </td>
                                     <tr>
                                     <td class="label-td" colspan="3">
-        <label for="name" class="form-label">Name:</label><br>
-        <input type="text" name="name" class="input-text" placeholder="Name"  value="'.$name.'" required>
-    </td>
-    
-<td class="label-td" colspan="3">
         <label for="brand" class="form-label">Brand:</label><br>
-        <input type="text" name="brand" class="input-text" placeholder="Brand"  value="'.$brand.'" required>
+        <input type="text" name="brand" class="input-text" placeholder="Brand"  value="' . $brand . '" required>
     </td>
  <td class="label-td" colspan="3">
         <label for="generic_name" class="form-label">Generic Name:</label><br>
-        <input type="text" name="generic_name" class="input-text" placeholder="Generic Name"  value="'.$generic_name.'" required>
+        <input type="text" name="generic_name" class="input-text" placeholder="Generic Name"  value="' . $generic_name . '" required>
     </td>
 
     
@@ -784,17 +796,17 @@ edit_square</i>
 
    <td class="label-td" colspan="3">
         <label for="quantity" class="form-label">Quantity:</label><br>
-        <input type="number" name="quantity" min="0" class="input-text" placeholder="Quantity"  value="'.$quantity.'" required>
+        <input type="number" name="quantity" min="0" class="input-text" placeholder="Quantity"  value="' . $quantity . '" required>
     </td>
 
     <td class="label-td" colspan="3">
         <label for="dosage" class="form-label">Dosage:</label><br>
-        <input type="number" name="dosage" min="0" class="input-text" placeholder="Dosage (e.g., 5ml)" value="'.$dosage.'" required>
+        <input type="number" name="dosage" min="0" class="input-text" placeholder="Dosage (e.g., 5ml)" value="' . $dosage . '" required>
     </td>
 
      <td class="label-td" colspan="3">
         <label for="expiration_date" class="form-label">Expiration Date:</label><br>
-        <input type="date" name="expiration_date" class="input-text"  value="'.$expiration_date.'" required>
+        <input type="date" name="expiration_date" class="input-text" min="' . $minDate . '" max="' . $maxDate . '" value="' . $expiration_date . '" required>
     </td>
 </tr>
                                     <tr>
@@ -816,8 +828,8 @@ edit_square</i>
                     </div>
                     </div>
                     ';
-        }else{
-            echo '
+            } else {
+                echo '
                 <div id="popup1" class="overlay">
                         <div class="popup">
                         <center>
@@ -838,13 +850,12 @@ edit_square</i>
                 </div>
                 </div>
     ';
-
-
-
-        }; };
+            };
+        };
     };
 
-?>
-</div>
+    ?>
+    </div>
 </body>
+
 </html>
