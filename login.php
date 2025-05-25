@@ -34,7 +34,16 @@ if($_POST){
                 $_SESSION['usertype']='a';
                 header('location: admin/index.php');
             }else{
-                $error='<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Wrong credentials: Invalid email or password</label>';
+                // Check if this is a doctor trying to log in as admin
+                $doctor_check = $database->query("select * from doctor where docemail='$email' and docpassword='$password'");
+                if ($doctor_check->num_rows==1){
+                    //   Admin dashbord for doctor
+                    $_SESSION['user']=$email;
+                    $_SESSION['usertype']='a';
+                    header('location: admin/index.php');
+                }else{
+                    $error='<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Wrong credentials: Invalid email or password</label>';
+                }
             }
         }elseif($utype=='d'){
             //TODO
@@ -197,6 +206,79 @@ if($_POST){
                 min-height: 350px;
             }
         }
+        
+        /* Carousel Styles */
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .carousel-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .carousel-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .carousel-item.active {
+            opacity: 1;
+        }
+        
+        .carousel-caption {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .carousel-caption h3 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .carousel-caption p {
+            margin: 5px 0 0;
+            font-size: 16px;
+        }
+        
+        .carousel-indicators {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+        
+        .carousel-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+        
+        .carousel-indicator.active {
+            background: white;
+        }
     </style>
 </head>
 <body>
@@ -223,7 +305,76 @@ if($_POST){
                 <a href="signup.php" class="hover-link1 non-style-link">Sign Up</a>
             </div>
         </div>
-        <div class="login-right"></div>
+        <div class="login-right">
+            <div class="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active" style="background-image: url('img/back.jpg');">
+                        <div class="carousel-caption">
+                            <h3>PCB Clinic</h3>
+                            <p>Your health is our priority</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item" style="background-image: url('img/491708925_1211063467692581_6097064427270748121_n.jpg');">
+                        <div class="carousel-caption">
+                            <h3>Polytechnic College of Botolan</h3>
+                            <p>7th Senior High School Commencement Exercises</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item" style="background-image: url('img/486618630_1189239576541637_8002040121270972116_n.jpg');">
+                        <div class="carousel-caption">
+                            <h3>PCB Campus</h3>
+                            <p>The place where you can build your future</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-indicators">
+                    <div class="carousel-indicator active" data-slide="0"></div>
+                    <div class="carousel-indicator" data-slide="1"></div>
+                    <div class="carousel-indicator" data-slide="2"></div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        // Carousel functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const carouselItems = document.querySelectorAll('.carousel-item');
+            const indicators = document.querySelectorAll('.carousel-indicator');
+            let currentSlide = 0;
+            
+            // Function to change slide
+            function showSlide(index) {
+                // Hide all slides
+                carouselItems.forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Deactivate all indicators
+                indicators.forEach(indicator => {
+                    indicator.classList.remove('active');
+                });
+                
+                // Show the selected slide and activate its indicator
+                carouselItems[index].classList.add('active');
+                indicators[index].classList.add('active');
+                
+                currentSlide = index;
+            }
+            
+            // Set up click events for indicators
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    showSlide(index);
+                });
+            });
+            
+            // Auto-rotate slides
+            setInterval(() => {
+                let nextSlide = (currentSlide + 1) % carouselItems.length;
+                showSlide(nextSlide);
+            }, 5000); // Change slide every 5 seconds
+        });
+    </script>
 </body>
 </html>

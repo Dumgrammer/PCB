@@ -68,6 +68,59 @@
             object-fit: contain;
             opacity: 0.8;
         }
+        
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .container {
+            background-color: #1e1e1e;
+        }
+        
+        body.dark-mode .menu {
+            background-color: #252525;
+        }
+        
+        body.dark-mode .dash-body {
+            background-color: #1e1e1e;
+        }
+        
+        body.dark-mode .menu-text {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .sub-table {
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .table-headin {
+            background-color: #333;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .popup {
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .input-text,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #e0e0e0;
+            border-color: #444;
+        }
+        
+        body.dark-mode .btn-primary {
+            background-color: #0d6efd;
+        }
+        
+        body.dark-mode .non-style-link {
+            color: #e0e0e0;
+        }
     </style>
 </head>
 
@@ -149,6 +202,19 @@
     </tr>
 
     <tr class="menu-row">
+        <td class="menu-btn menu-icon-doctor">
+            <a href="doctors.php" class="non-style-link-menu">
+                <div>
+                    <p class="menu-text">
+                        <i class="material-symbols-outlined">supervised_user_circle</i>
+                        Staff
+                    </p>
+                </div>
+            </a>
+        </td>
+    </tr>
+
+    <tr class="menu-row">
         <td class="menu-btn menu-icon-appointment">
             <a href="appointment.php" class="non-style-link-menu">
                 <div>
@@ -172,9 +238,9 @@
     </tr>
     <tr class="menu-row">
         <td class="menu-btn menu-icon-settings   ">
-            <a href="#" class="non-style-link-menu">
+            <a href="#" class="non-style-link-menu" onclick="toggleDarkMode(); return false;">
                 <div>
-                    <p class="menu-text"><i class="material-symbols-outlined">settings</i>Settings</p>
+                    <p class="menu-text"><i class="material-symbols-outlined">settings</i>Toggle Dark Mode</p>
             </a></div>
         </td>
     </tr>
@@ -378,10 +444,6 @@
                                 <thead>
                                     <tr>
                                         <th class="table-headin">
-                                            Name
-
-                                        </th>
-                                        <th class="table-headin">
                                             Brand
 
                                         </th>
@@ -440,65 +502,33 @@
                                             $row = $result->fetch_assoc();
                                             $medid = $row["id"];
                                             $brand = $row["brand"];
-                                            $quantity = $row["quantity"];
-                                            $expiration_date = $row["expiration_date"];
                                             $generic_name = $row["generic_name"];
+                                            $quantity = $row["quantity"];
                                             $dosage = $row["dosage"];
+                                            $expiration_date = $row["expiration_date"];
 
-                                            /*$category=$row["category"];
-                                    $spcil_res= $database->query("select category from medicine_category where id='$category'");
-                                    $spcil_array= $spcil_res->fetch_assoc();
-                                    $spcil_name=$spcil_array["category"];
-*/
                                             echo '<tr>
-
-                                        <td>
-                                            ' . substr($brand, 0, 20) . '
-                                        </td>
-
-                                        <td>
-                                            ' . substr($generic_name, 0, 20) . '
-                                        </td>
-
-                                        <td>
-                                            ' . substr($quantity, 0, 20) . '
-                                        </td>
-
-                                        <td>
-                                            ' . substr($dosage, 0, 20) . 'ML
-                                        </td>
-
-                                        <td>
-                                            ' . substr($expiration_date, 0, 20) . '
-                                        </td>
-
-                                      
-
-                        <td>
-                        <div style="display:flex;justify-content: center;">
-                 <a href="?action=edit&id=' . $medid . '&error=0" class=" btn-primary btn button-icon" >
-                        
-                        <i  class="material-symbols-outlined">
-edit_square</i>
-                      
-                       </a>
-                        &nbsp;&nbsp;&nbsp;
-
-                        <a href="?action=view&id=' . $medid . '" class=" btn-success btn button-icon">
-                        
-                        <i class="material-symbols-outlined">visibility</i>
-                     
-                        </a>
-                       &nbsp;&nbsp;&nbsp;
-
-
-                       <a href="?action=drop&id=' . $medid . '&name=' . $brand . '" class="btn-danger btn button-icon ">
-                      
-                       <i class="material-symbols-outlined">delete</i>
-                     </a>
-                        </div>
-                        </td>
-                    </tr>';
+                                            <td>' . substr($brand, 0, 20) . '</td>
+                                            <td>' . substr($generic_name, 0, 20) . '</td>
+                                            <td>' . substr($quantity, 0, 20) . '</td>
+                                            <td>' . substr($dosage, 0, 20) . 'ML</td>
+                                            <td>' . substr($expiration_date, 0, 20) . '</td>
+                                            <td>
+                                                <div style="display:flex;justify-content: center;">
+                                                    <a href="?action=edit&id=' . $medid . '&error=0" class=" btn-primary btn button-icon" >
+                                                        <i  class="material-symbols-outlined">edit_square</i>
+                                                    </a>
+                                                    &nbsp;&nbsp;&nbsp;
+                                                    <a href="?action=view&id=' . $medid . '" class=" btn-success btn button-icon">
+                                                        <i class="material-symbols-outlined">visibility</i>
+                                                    </a>
+                                                    &nbsp;&nbsp;&nbsp;
+                                                    <a href="?action=drop&id=' . $medid . '&name=' . $brand . '" class="btn-danger btn button-icon ">
+                                                        <i class="material-symbols-outlined">delete</i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>';
                                         }
                                     }
 
@@ -551,7 +581,6 @@ edit_square</i>
             $brand = $row["brand"];
             $quantity = $row["quantity"];
             $expiration_date = $row["expiration_date"];
-            $name = $row["name"];
             $generic_name = $row["generic_name"];
             $dosage = $row["dosage"];
             echo '
@@ -572,15 +601,10 @@ edit_square</i>
                             
                             <tr>
                             <td class="label-td" colspan="3">
-        <label class="form-label">Name:</label><br>
-        <span>' . $name . '</span>
+        <label class="form-label">Brand:</label><br>
+        <span>' . $brand . '</span>
     </td>
     <td class="label-td" colspan="3">
-        <label class="form-label">Brand:</label><br>
-        <span> ' . $brand . '</span>
-    </td>
-
-<td class="label-td" colspan="3">
         <label class="form-label">Generic Name:</label><br>
         <span>' . $generic_name . '</span><br>
     </td>
@@ -674,7 +698,7 @@ edit_square</i>
 
     <td class="label-td" colspan="3">
         <label for="dosage" class="form-label">Dosage:</label><br>
-        <input type="number" name="dosage" min="0" class="input-text" placeholder="Dosage (e.g., 5ml)" required>
+        <input type="text" name="dosage" min="0" class="input-text" placeholder="Dosage (e.g., 5ml)" required>
     </td>
 </tr>
                                
@@ -730,7 +754,6 @@ edit_square</i>
             $brand = $row["brand"];
             $quantity = $row["quantity"];
             $expiration_date = $row["expiration_date"];
-            $name = $row["name"];
             $generic_name = $row["generic_name"];
             $dosage = $row["dosage"];
             /* $category=$row["category"];
@@ -801,7 +824,7 @@ edit_square</i>
 
     <td class="label-td" colspan="3">
         <label for="dosage" class="form-label">Dosage:</label><br>
-        <input type="number" name="dosage" min="0" class="input-text" placeholder="Dosage (e.g., 5ml)" value="' . $dosage . '" required>
+        <input type="text" name="dosage" min="0" class="input-text" placeholder="Dosage (e.g., 5ml)" value="' . $dosage . '" required>
     </td>
 
      <td class="label-td" colspan="3">
@@ -856,6 +879,26 @@ edit_square</i>
 
     ?>
     </div>
+    <script>
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            
+            // Save preference to localStorage
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+        
+        // Check if dark mode was previously enabled
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+            }
+        });
+    </script>
 </body>
 
 </html>

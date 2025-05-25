@@ -60,6 +60,59 @@ include("../connection.php");
             object-fit: contain;
             opacity: 0.8;
         }
+        
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .container {
+            background-color: #1e1e1e;
+        }
+        
+        body.dark-mode .menu {
+            background-color: #252525;
+        }
+        
+        body.dark-mode .dash-body {
+            background-color: #1e1e1e;
+        }
+        
+        body.dark-mode .menu-text {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .sub-table {
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .table-headin {
+            background-color: #333;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .popup {
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .input-text,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #e0e0e0;
+            border-color: #444;
+        }
+        
+        body.dark-mode .btn-primary {
+            background-color: #0d6efd;
+        }
+        
+        body.dark-mode .non-style-link {
+            color: #e0e0e0;
+        }
     </style>
 </head>
 <body>
@@ -118,6 +171,18 @@ include("../connection.php");
                     </td>
                 </tr>
                 <tr class="menu-row">
+                    <td class="menu-btn menu-icon-doctor">
+                        <a href="doctors.php" class="non-style-link-menu">
+                            <div>
+                                <p class="menu-text">
+                                    <i class="material-symbols-outlined">supervised_user_circle</i>
+                                    Staff
+                                </p>
+                            </div>
+                        </a>
+                    </td>
+                </tr>
+                <tr class="menu-row">
                     <td class="menu-btn menu-icon-appointment">
                         <a href="appointment.php" class="non-style-link-menu">
                             <div>
@@ -145,11 +210,11 @@ include("../connection.php");
                 </tr>
                 <tr class="menu-row">
                     <td class="menu-btn menu-icon-settings">
-                        <a href="#" class="non-style-link-menu">
+                        <a href="#" class="non-style-link-menu" onclick="toggleDarkMode(); return false;">
                             <div>
                                 <p class="menu-text">
                                     <i class="material-symbols-outlined">settings</i>
-                                    Settings
+                                    Toggle Dark Mode
                                 </p>
                             </div>
                         </a>
@@ -208,6 +273,26 @@ include("../connection.php");
             </table>
         </div>
     </div>
+    <script>
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            
+            // Save preference to localStorage
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+        
+        // Check if dark mode was previously enabled
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+            }
+        });
+    </script>
 </body>
 </html>
          

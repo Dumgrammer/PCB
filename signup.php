@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -129,13 +132,48 @@
             .btn-primary:hover {
                 background-color: #0056b3;
             }
+            .image-upload-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .image-preview {
+                width: 150px;
+                height: 150px;
+                border: 2px dashed #ccc;
+                border-radius: 50%;
+                margin: 10px auto;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                background-color: #f8f8f8;
+            }
+            .image-preview img {
+                max-width: 100%;
+                max-height: 100%;
+                display: none;
+            }
+            .file-input {
+                display: none;
+            }
+            .upload-button {
+                padding: 8px 16px;
+                background-color: #f0f0f0;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: all 0.3s;
+            }
+            .upload-button:hover {
+                background-color: #e0e0e0;
+            }
     </style>
     
 </head>
 <body>
 <?php
-session_start();
-
 $database = new mysqli("localhost", "root", "", "vaidyamitra");
 if ($database->connect_error) {
     die("Connection failed: " . $database->connect_error);
@@ -157,6 +195,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
     $cpassword = $_POST['cpassword'];
     $student_id = $_POST['student_id'];
+    $course = $_POST['course'];
+    
+    // Initialize image as null
+    $image = null;
 
     if ($password !== $cpassword) {
         die("Passwords do not match!");
@@ -189,18 +231,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $checkStmt->close();
 
+    // Process image upload if exists
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+        $allowed = ['jpg', 'jpeg', 'png', 'gif'];
+        $filename = $_FILES['image']['name'];
+        $file_ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        
+        // Check if extension is allowed
+        if (in_array($file_ext, $allowed)) {
+            // Generate a unique filename
+            $new_filename = $student_id . '_' . time() . '.' . $file_ext;
+            
+            // Create directory if it doesn't exist
+            if (!file_exists('uploads/patients')) {
+                mkdir('uploads/patients', 0777, true);
+            }
+            
+            $upload_path = 'uploads/patients/' . $new_filename;
+            
+            // Move uploaded file
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_path)) {
+                $image = $new_filename;
+            } else {
+                echo "<script>alert('Failed to upload image'); history.back();</script>";
+                exit();
+            }
+        } else {
+            echo "<script>alert('Invalid image format. Allowed formats: jpg, jpeg, png, gif'); history.back();</script>";
+            exit();
+        }
+    }
+
     // Hash password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     // Insert into pending_patient
     $stmt = $database->prepare("INSERT INTO pending_patient (
         fname, mname, lname, pdob, ptel, pbarangay, pcity, pprovince,
-        email, password, student_id, status
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+        email, password, student_id, course, status, image
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)");
 
     $stmt->bind_param(
-        "sssssssssss",
-        $fname, $mname, $lname, $pdob, $ptel, $pbarangay, $pcity, $pprovince, $email, $hashedPassword, $student_id
+        "sssssssssssss",
+        $fname, $mname, $lname, $pdob, $ptel, $pbarangay, $pcity, $pprovince, $email, $hashedPassword, $student_id, $course, $image
     );
 
     if ($stmt->execute()) {
@@ -233,12 +306,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <center>
 <div class="container">
-    <form method="POST" action="signup.php">
+    <form method="POST" action="signup.php" enctype="multipart/form-data">
         <table border="0">
             <tr>
                 <td colspan="6">
                     <h2>Sign Up</h2>
                     <p>Add Your Personal Details to Continue</p>
+                </td>
+            </tr>
+
+            <!-- Profile Image -->
+            <tr>
+                <td class="label-td" colspan="6">
+                    <label class="form-label">Profile Picture:</label>
+                    <div class="image-upload-container">
+                        <div class="image-preview">
+                            <img id="preview-image" src="#" alt="Preview">
+                            <span id="placeholder-text">No image selected</span>
+                        </div>
+                        <label for="image-upload" class="upload-button">Choose Image</label>
+                        <input type="file" name="image" id="image-upload" class="file-input" accept="image/*">
+                    </div>
                 </td>
             </tr>
 
@@ -290,14 +378,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </td>
             </tr>
 
+            <!-- Course -->
+            <tr>
+                <td class="label-td" colspan="6"><label class="form-label">Course:</label></td>
+            </tr>
+            <tr>
+                <td class="label-td" colspan="6">
+                    <select name="course" class="input-text" required>
+                        <option value="" disabled selected>Select Course</option>
+                        <optgroup label="Institute of Computing Studies">
+                            <option value="BSIT">Bachelor of Science in Information Technology (BSIT)</option>
+                            <option value="BSIS">Bachelor of Science in Information Systems (BSIS)</option>
+                            <option value="ACT">Associate in Computer Technology (ACT)</option>
+                            <option value="BSCS">Bachelor of Science in Computer Science (BSCS)</option>
+                        </optgroup>
+                        <optgroup label="Institute of Education">
+                            <option value="BEED">Bachelor of Elementary Education (BEED)</option>
+                            <option value="BCAED">Bachelor of Culture and Arts Education (BCAED)</option>
+                            <option value="BCED">Bachelor of Secondary Education (BCED)</option>
+                        </optgroup>
+                    </select>
+                </td>
+            </tr>
+
             <!-- Address -->
             <tr>
                 <td class="label-td" colspan="6"><label class="form-label">Address:</label></td>
             </tr>
             <tr>
-                <td class="label-td" colspan="2"><input type="text" name="pbarangay" class="input-text" placeholder="Barangay" required></td>
-                <td class="label-td" colspan="2"><input type="text" name="pcity" class="input-text" placeholder="City" required></td>
-                <td class="label-td" colspan="2"><input type="text" name="pprovince" class="input-text" placeholder="Province" required></td>
+                <td class="label-td" colspan="2">
+                    <select name="pbarangay" class="input-text" required>
+                        <option value="" disabled selected>Select Barangay</option>
+                        <option value="Bancal">Bancal</option>
+                        <option value="Bangan">Bangan</option>
+                        <option value="Batonlapoc">Batonlapoc</option>
+                        <option value="Belbel">Belbel</option>
+                        <option value="Beneg">Beneg</option>
+                        <option value="Binuclutan">Binuclutan</option>
+                        <option value="Burgos">Burgos</option>
+                        <option value="Cabatuan">Cabatuan</option>
+                        <option value="Capayawan">Capayawan</option>
+                        <option value="Carael">Carael</option>
+                        <option value="Danacbunga">Danacbunga</option>
+                        <option value="Maguisguis">Maguisguis</option>
+                        <option value="Malomboy">Malomboy</option>
+                        <option value="Mambog">Mambog</option>
+                        <option value="Moraza">Moraza</option>
+                        <option value="Nacolcol">Nacolcol</option>
+                        <option value="Owaog-Nibloc">Owaog-Nibloc</option>
+                        <option value="Paco Poblacion">Paco Poblacion</option>
+                        <option value="Palis">Palis</option>
+                        <option value="Panan">Panan</option>
+                        <option value="Parel">Parel</option>
+                        <option value="Paudpod">Paudpod</option>
+                        <option value="Poonbato">Poonbato</option>
+                        <option value="Porac">Porac</option>
+                        <option value="San Isidro">San Isidro</option>
+                        <option value="San Juan">San Juan</option>
+                        <option value="San Miguel">San Miguel</option>
+                        <option value="Santiago">Santiago</option>
+                        <option value="Tampo Poblacion">Tampo Poblacion</option>
+                        <option value="Taugtog">Taugtog</option>
+                        <option value="Villar">Villar</option>
+                    </select>
+                </td>
+                <td class="label-td" colspan="2">
+                    <input type="text" name="pcity" class="input-text" value="Botolan" readonly>
+                </td>
+                <td class="label-td" colspan="2">
+                    <input type="text" name="pprovince" class="input-text" value="Zambales" readonly>
+                </td>
             </tr>
 
             <!-- Password -->
@@ -334,7 +484,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 </center>
 
-  <script>
+<script>
 document.querySelector('form').addEventListener('submit', function(e) {
     const email = document.querySelector('input[name="email"]').value;
     const password = document.querySelector('input[name="password"]').value;
@@ -351,9 +501,28 @@ document.querySelector('form').addEventListener('submit', function(e) {
     }
 });
 
-
+// Image preview functionality
+document.getElementById('image-upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('preview-image');
+    const placeholder = document.getElementById('placeholder-text');
+    
+    if (file) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+        }
+        
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
+        placeholder.style.display = 'block';
+    }
+});
 </script>
-
 
 </body>
 </html>

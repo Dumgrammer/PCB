@@ -39,153 +39,217 @@
 
             .menu-row {
                 position: relative;
-
-                .card {
-
-                    background-image: url(../img/bgdash.jpg);
-                    background-size: cover;
-
-                }
-
-                .menu-text {
-                    font-size: 16px;
-                    font-weight: 500;
-                    color: #333;
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    margin: 0;
-                }
-
-                .menu-text i.material-symbols-outlined {
-                    font-size: 24px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-                .menu-text i.custom-icon img {
-                    width: 24px;
-                    height: 24px;
-                    display: block;
-                    object-fit: contain;
-                    opacity: 0.8;
-                }
-        </style>
-    </head>
-
-    <body>
-        <?php
-
-        //learn from w3schools.com
-
-        session_start();
-
-        if (isset($_SESSION["user"])) {
-            if (($_SESSION["user"]) == "" or $_SESSION['usertype'] != 'a') {
-                header("location: ../login.php");
             }
-        } else {
+
+            .card {
+                background-image: url(../img/bgdash.jpg);
+                background-size: cover;
+            }
+
+            .menu-text {
+                font-size: 16px;
+                font-weight: 500;
+                color: #333;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin: 0;
+            }
+
+            .menu-text i.material-symbols-outlined {
+                font-size: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .menu-text i.custom-icon img {
+                width: 24px;
+                height: 24px;
+                display: block;
+                object-fit: contain;
+                opacity: 0.8;
+            }
+            
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .container {
+            background-color: #1e1e1e;
+        }
+        
+        body.dark-mode .menu {
+            background-color: #252525;
+        }
+        
+        body.dark-mode .dash-body {
+            background-color: #1e1e1e;
+        }
+        
+        body.dark-mode .menu-text {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .sub-table {
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .table-headin {
+            background-color: #333;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .popup {
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .input-text,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #e0e0e0;
+            border-color: #444;
+        }
+        
+        body.dark-mode .btn-primary {
+            background-color: #0d6efd;
+        }
+        
+        body.dark-mode .non-style-link {
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+
+<body>
+    <?php
+
+    //learn from w3schools.com
+
+    session_start();
+
+    if (isset($_SESSION["user"])) {
+        if (($_SESSION["user"]) == "" or $_SESSION['usertype'] != 'a') {
             header("location: ../login.php");
         }
+    } else {
+        header("location: ../login.php");
+    }
 
 
-        //import database
-        include("../connection.php");
+    //import database
+    include("../connection.php");
 
 
-        ?>
-        <div class="container">
+    ?>
+    <div class="container">
 
-            <div class="menu">
-                <table class="menu-container" border="0">
-                    <tr>
-                        <td>
-                            <table border="0" class="profile-container">
-                                <tr>
-                                    <td>
-                                        <img src="../img/PCB.png" alt="">
-                                    </td>
+        <div class="menu">
+            <table class="menu-container" border="0">
+                <tr>
+                    <td>
+                        <table border="0" class="profile-container">
+                            <tr>
+                                <td>
+                                    <img src="../img/PCB.png" alt="">
+                                </td>
 
-                                </tr>
+                            </tr>
 
-                            </table>
-                        </td>
-                    </tr>
-                    <tr class="menu-row">
-                        <td class="menu-btn menu-icon-dashbord menu-active menu-icon-dashbord-active">
+                        </table>
+                    </td>
+                </tr>
+                <tr class="menu-row">
+                    <td class="menu-btn menu-icon-dashbord menu-active menu-icon-dashbord-active">
 
-                            <a href="index.php" class="non-style-link-menu non-style-link-menu-active">
-                                <div>
-                                    <p class="menu-text">
-                                        <i class="material-symbols-outlined"> dashboard</i>
-                                        Dashboard
-                                    </p>
-                            </a>
-            </div></a>
+                        <a href="index.php" class="non-style-link-menu non-style-link-menu-active">
+                            <div>
+                                <p class="menu-text">
+                                    <i class="material-symbols-outlined"> dashboard</i>
+                                    Dashboard
+                                </p>
+                        </a>
+                </div></a>
+                </td>
+                </tr>
+                <tr class="menu-row">
+                    <td class="menu-btn menu-icon-medicine">
+                        <a href="medicine.php" class="non-style-link-menu">
+                            <div>
+                                <p class="menu-text"><i class="material-symbols-outlined"> <img src="../img/icons/medicine-icon.png" style="width: 28px;
+                                opacity: 70%;"></i>Medicine</p>
+                        </a>
+            </div>
             </td>
             </tr>
             <tr class="menu-row">
-                <td class="menu-btn menu-icon-medicine">
-                    <a href="medicine.php" class="non-style-link-menu">
+                <td class="menu-btn menu-icon-equipment">
+                    <a href="equipment.php" class="non-style-link-menu">
                         <div>
-                            <p class="menu-text"><i class="material-symbols-outlined"> <img src="../img/icons/medicine-icon.png" style="width: 28px;
-                            opacity: 70%;"></i>Medicine</p>
+                            <p class="menu-text">
+                                <i class="custom-icon"><img src="../img/icons/equipment-icon.png" alt="Equipment Icon" style="opacity: 75%;"></i>
+                                Equipment
+                            </p>
+                        </div>
                     </a>
-        </div>
-        </td>
-        </tr>
-        <tr class="menu-row">
-            <td class="menu-btn menu-icon-equipment">
-                <a href="equipment.php" class="non-style-link-menu">
-                    <div>
-                        <p class="menu-text">
-                            <i class="custom-icon"><img src="../img/icons/equipment-icon.png" alt="Equipment Icon" style="opacity: 75%;"></i>
-                            Equipment
-                        </p>
-                    </div>
-                </a>
-            </td>
-        </tr>
-        <tr class="menu-row">
-        <td class="menu-btn menu-icon-equipment">
-            <a href="appointment.php" class="non-style-link-menu">
-                <div>
-                    <p class="menu-text">
-                        <i class="custom-icon"><img src="../img/icons/equipment-icon.png" alt="Equipment Icon" style="opacity: 75%;"></i>
-                        Appointment
-                    </p>
-                </div>
-            </a>
-        </td>
-    </tr>
-        <tr class="menu-row">
-            <td class="menu-btn menu-icon-patient">
-                <a href="patient.php" class="non-style-link-menu">
-                    <div>
-                        <p class="menu-text"><i class="material-symbols-outlined">face</i>Patients</p>
-                    </div>
-                </a>
-            </td>
-        </tr>
-        <tr class="menu-row">
-            <td class="menu-btn menu-icon-settings   ">
-                <a href="#" class="non-style-link-menu">
-                    <div>
-                        <p class="menu-text"><i class="material-symbols-outlined">settings</i>Settings</p>
-                </a></div>
-            </td>
-        </tr>
-        <tr class="menu-row">
-            <td class="menu-btn menu-icon-settings">
-                <a href="../logout.php" class="non-style-link-menu">
-                    <div>
-                        <p class="menu-text"><i class="material-symbols-outlined">power_settings_new</i>Logout</p>
-                </a></div>
-            </td>
-        </tr>
+                </td>
+            </tr>
+            <tr class="menu-row">
+                <td class="menu-btn menu-icon-doctor">
+                    <a href="doctors.php" class="non-style-link-menu">
+                        <div>
+                            <p class="menu-text">
+                                <i class="material-symbols-outlined">supervised_user_circle</i>
+                                Staff
+                            </p>
+                        </div>
+                    </a>
+                </td>
+            </tr>
+            <tr class="menu-row">
+                <td class="menu-btn menu-icon-appointment">
+                    <a href="appointment.php" class="non-style-link-menu">
+                        <div>
+                            <p class="menu-text">
+                                <i class="custom-icon"><img src="../img/icons/equipment-icon.png" alt="Equipment Icon" style="opacity: 75%;"></i>
+                                Appointment
+                            </p>
+                        </div>
+                    </a>
+                </td>
+            </tr>
+            <tr class="menu-row">
+                <td class="menu-btn menu-icon-patient">
+                    <a href="patient.php" class="non-style-link-menu">
+                        <div>
+                            <p class="menu-text"><i class="material-symbols-outlined">face</i>Patients</p>
+                        </div>
+                    </a>
+                </td>
+            </tr>
+            <tr class="menu-row">
+                <td class="menu-btn menu-icon-settings   ">
+                    <a href="#" class="non-style-link-menu" onclick="toggleDarkMode(); return false;">
+                        <div>
+                            <p class="menu-text"><i class="material-symbols-outlined">settings</i>Toggle Dark Mode</p>
+                    </a></div>
+                </td>
+            </tr>
+            <tr class="menu-row">
+                <td class="menu-btn menu-icon-settings">
+                    <a href="../logout.php" class="non-style-link-menu">
+                        <div>
+                            <p class="menu-text"><i class="material-symbols-outlined">power_settings_new</i>Logout</p>
+                    </a></div>
+                </td>
+            </tr>
 
-        </table>
+            </table>
         </div>
         <div class="dash-body">
             <table border="0" width="100%" style=" border-spacing: 0;margin:0;padding:0;">
@@ -791,6 +855,26 @@ edit_square</i>
 
         ?>
         </div>
+        <script>
+            // Function to toggle dark mode
+            function toggleDarkMode() {
+                document.body.classList.toggle('dark-mode');
+                
+                // Save preference to localStorage
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('darkMode', 'enabled');
+                } else {
+                    localStorage.setItem('darkMode', 'disabled');
+                }
+            }
+            
+            // Check if dark mode was previously enabled
+            document.addEventListener('DOMContentLoaded', function() {
+                if (localStorage.getItem('darkMode') === 'enabled') {
+                    document.body.classList.add('dark-mode');
+                }
+            });
+        </script>
     </body>
 
     </html>

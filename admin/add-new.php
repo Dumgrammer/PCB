@@ -52,26 +52,35 @@
         
         if ($password==$cpassword){
             $error='3';
-            $result= $database->query("select * from webuser where email='$email';");
-            if($result->num_rows==1){
-                $error='1';
-            }else{
-
-                $sql1="insert into doctor(docemail,docname,docpassword,docnic,doctel,specialties) values('$email','$name','$password','$nic','$tele',$spec);";
-                $sql2="insert into webuser values('$email','p')";
-                $database->query($sql1);
-                $database->query($sql2);
-
-                // Also add the doctor to the webuser table
-                $result2 = $database->query("SELECT * FROM webuser WHERE email='$email'");
-                if($result2->num_rows==0){
-                    $database->query("INSERT INTO webuser(email,usertype) VALUES('$email','d')");
+            // First check if email already exists in webuser table
+            $result = $database->query("SELECT * FROM webuser WHERE email='$email'");
+            if($result->num_rows > 0){
+                $error='1'; // Email already exists
+            } else {
+                try {
+                    // Start transaction
+                    $database->begin_transaction();
+                    
+                    // Insert into doctor table
+                    $sql1 = "INSERT INTO doctor(docemail,docname,docpassword,docnic,doctel,specialties) VALUES('$email','$name','$password','$nic','$tele','$spec')";
+                    $database->query($sql1);
+                    
+                    // Insert into webuser table with admin type only
+                    // Since email is primary key, we can only have one entry per email
+                    // We'll use 'a' (admin) so doctors can log in as admins
+                    $sql2 = "INSERT INTO webuser(email,usertype) VALUES('$email','a')";
+                    $database->query($sql2);
+                    
+                    // Commit transaction
+                    $database->commit();
+                    $error = '4'; // Success
+                } catch (Exception $e) {
+                    // Rollback transaction on error
+                    $database->rollback();
+                    $error = '3'; // Generic error
+                    // For debugging
+                    // file_put_contents('error_log.txt', date('Y-m-d H:i:s') . ': ' . $e->getMessage() . "\n", FILE_APPEND);
                 }
-
-                //echo $sql1;
-                //echo $sql2;
-                $error= '4';
-                
             }
             
         }else{

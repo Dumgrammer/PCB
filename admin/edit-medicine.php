@@ -38,7 +38,6 @@ include("../connection.php");
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get values safely
     $id = $_POST['id'] ?? null;
-    $name = $_POST['name'] ?? '';
     $brand = $_POST['brand'] ?? '';
     $generic_name = $_POST['generic_name'] ?? '';
     $quantity = $_POST['quantity'] ?? 0;
@@ -48,7 +47,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($id) {
         // Update query
         $sql = "UPDATE medicine SET 
-                    name = '$name',
                     brand = '$brand',
                     generic_name = '$generic_name',
                     quantity = '$quantity',

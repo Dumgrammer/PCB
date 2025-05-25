@@ -68,6 +68,72 @@
             object-fit: contain;
             opacity: 0.8;
         }
+
+        /* Add dark mode styles */
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .container {
+            background-color: #1e1e1e;
+        }
+        
+        body.dark-mode .menu {
+            background-color: #252525;
+        }
+        
+        body.dark-mode .dash-body {
+            background-color: #1e1e1e;
+        }
+        
+        body.dark-mode .menu-text {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .sub-table {
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .table-headin {
+            background-color: #333;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .popup {
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .input-text,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #e0e0e0;
+            border-color: #444;
+        }
+        
+        body.dark-mode .btn-primary {
+            background-color: #0d6efd;
+        }
+        
+        body.dark-mode .non-style-link {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .dashboard-items {
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .h1-dashboard {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .h3-dashboard {
+            color: #e0e0e0;
+        }
     </style>
 </head>
 
@@ -145,10 +211,25 @@
         </td>
     </tr>
     <tr class="menu-row">
+        <td class="menu-btn menu-icon-doctor">
+            <a href="doctors.php" class="non-style-link-menu">
+                <div>
+                    <p class="menu-text">
+                        <i class="material-symbols-outlined">supervised_user_circle</i>
+                        Staff
+                    </p>
+                </div>
+            </a>
+        </td>
+    </tr>
+    <tr class="menu-row">
         <td class="menu-btn menu-icon-appoinment">
             <a href="appointment.php" class="non-style-link-menu">
                 <div>
-                    <p class="menu-text"><i class="material-symbols-outlined">description</i>Appointment</p>
+                    <p class="menu-text">
+                        <i class="custom-icon"><img src="../img/icons/appointment-icon.png" alt="Appointment Icon" style="opacity: 75%;"></i>
+                        Appointment
+                    </p>
                 </div>
             </a>
         </td>
@@ -162,12 +243,10 @@
             </a>
         </td>
     </tr>
-    <tr class="menu-row">
+    <tr class="menu-row" >
         <td class="menu-btn menu-icon-settings   ">
-            <a href="#" class="non-style-link-menu">
-                <div>
-                    <p class="menu-text"><i class="material-symbols-outlined">settings</i>Settings</p>
-            </a></div>
+            <a href="#" class="non-style-link-menu" onclick="toggleDarkMode(); return false;">
+                <div><p class="menu-text"><i class="material-symbols-outlined">settings</i>Toggle Dark Mode</p></a></div>
         </td>
     </tr>
     <tr class="menu-row">
@@ -289,87 +368,109 @@
     </tr>
 
     <td colspan="4">
-
         <center>
             <table class="filter-container" style="border: none;" border="0">
-
-
-                <div class="card">
-                    <div class="body">
-
-                        <div class="cards" style="float:left;">
-                            <img src="../img/card.png" alt="">
-                        </div>
-
-                        <div class="head">
-                            <h4 class="font-20 weight-500 mb-2">
-                                MISSION
-                            </h4>
-                            <p>WE WILL ENRICH,EDUCATE AND ENLIGHTEN POLYTECHNIC COLLEGE OF BOTOLAN (PCB) STUDENT THROUGH PROVIDING ACCESSIBLE HEALTH CARE,PROMOTING PREVENTION AND PARTNERING WITH PARENTS AND STAFF TO ENABLE STUDENTS TO PERFORM AT THEIR PERSONAL BEST.
-                            </p>
-                            <mark>
-
-                        </div>
-
-                        <div class="head">
-                            <h4 class="font-20 weight-500 mb-2">
-                                VISION
-                            </h4>
-                            <p>POLYTECHNIC COLLEGE OF BOTOLAN (PCB) WILL BE HEALTHY AND SAFE WHILE ACHIEVING ACADEMIC SUCCESS.
-                            </p>
-                            <mark>
-
-                        </div>
-
-                    </div>
-                </div>
-
-
                 <tr>
-                    <td style="width: 25%;">
-                        <div class="dashboard-items bg-danger" style="padding:20px;margin:auto;width:95%;display: flex">
-                            <div>
-
-                                <div class="h3-dashboard">
-                                    Nurse &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                </div> <br>
-                                <div class="h1-dashboard">
-                                    <?php echo $doctorrow->num_rows  ?>
+                    <td style="width: 50%; padding: 20px;">
+                        <div style="background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 20px; height: 200px; position: relative; overflow: hidden; display: flex; flex-direction: column;">
+                            <h4 style="text-align: center; color: #333; font-size: 22px; font-weight: 600; margin-bottom: 20px; letter-spacing: 1px;">MISSION</h4>
+                            <div style="display: flex; flex-grow: 1; height: 100%;">
+                                <div style="width: 6px; background-color: #3498db; border-radius: 3px 0 0 3px; margin-right: 20px; height: 100%;"></div>
+                                <div style="display: flex; align-items: center;">
+                                    <p style="color: #444; line-height: 1.6; font-size: 15px; margin: 0; text-align: justify;">
+                                    WE WILL ENRICH, EDUCATE AND ENLIGHTEN POLYTECHNIC COLLEGE OF BOTOLAN (PCB) STUDENT THROUGH PROVIDING ACCESSIBLE HEALTH CARE, PROMOTING PREVENTION AND PARTNERING WITH PARENTS AND STAFF TO ENABLE STUDENTS TO PERFORM AT THEIR PERSONAL BEST.
+                                    </p>
                                 </div>
                             </div>
-                            <div class=" dashboard-icons">
-                                <i class="fa fa-user-md"></i>
-                            </div>
-                    </td>
-
-                    <td style="width: 25%;">
-                        <div class="dashboard-items bg-success" style="padding:20px;margin:auto;width:95%;display: flex;">
-                            <div>
-                                <div class="h3-dashboard">
-                                    Patients &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                </div><br>
-                                <div class="h1-dashboard">
-                                    <?php echo $patientrow->num_rows  ?>
-                                </div>
-
-                            </div>
-                            <!--  <div class="dashboard-icons">
-                                    <i class="fa fa-wheelchair"></i>
-                                </div>
-                    </div>
-                </td>
-
-                 <td style="width: 25%;">
-                    <div  class="dashboard-items bg-info"  style="padding:20px;margin:auto;width:95%;display: flex;">
-                        <div>
-                             <div class="h3-dashboard">
-                                   Booking &nbsp;&nbsp;
-                                </div><br>
-                                <div class="h1-dashboard">
-                                   <?php echo $appointmentrow->num_rows  ?>
-                                </div> -->
-
                         </div>
+                    </td>
+                    <td style="width: 50%; padding: 20px;">
+                        <div style="background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 20px; height: 200px; position: relative; overflow: hidden; display: flex; flex-direction: column;">
+                            <h4 style="text-align: center; color: #333; font-size: 22px; font-weight: 600; margin-bottom: 20px; letter-spacing: 1px;">VISION</h4>
+                            <div style="display: flex; flex-grow: 1; height: 100%;">
+                                <div style="width: 6px; background-color: #2ecc71; border-radius: 3px 0 0 3px; margin-right: 20px; height: 100%;"></div>
+                                <div style="display: flex; align-items: center;">
+                                    <p style="color: #444; line-height: 1.6; font-size: 15px; margin: 0; text-align: justify;">
+                                    POLYTECHNIC COLLEGE OF BOTOLAN (PCB) WILL BE HEALTHY AND SAFE WHILE ACHIEVING ACADEMIC SUCCESS.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding: 20px;">
+                        <div class="dashboard-stats" style="display: flex; justify-content: space-between; gap: 20px;">
+                            <div style="background-color: #f07470; padding: 25px 25px 40px; width: 32%; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 700px;">
+                                <div style="margin-bottom: 30px;">
+                                    <div style="color: #fff; font-size: 22px; font-weight: 500; margin-bottom: 15px;">
+                                        Nurse
+                                    </div>
+                                    <div style="color: #fff; font-size: 40px; font-weight: bold;">
+                                        <?php echo $doctorrow->num_rows ?>
+                                    </div>
+                                </div>
+                                <div style="margin-top: auto; align-self: flex-end; background-color: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa fa-user-md" style="font-size: 28px; color: #fff;"></i>
+                                </div>
+                            </div>
+
+                            <div style="background-color: #6ac17a; padding: 25px 25px 40px; width: 32%; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 700px;">
+                                <div style="margin-bottom: 30px;">
+                                    <div style="color: #fff; font-size: 22px; font-weight: 500; margin-bottom: 15px;">
+                                        Patients
+                                    </div>
+                                    <div style="color: #fff; font-size: 40px; font-weight: bold;">
+                                        <?php echo $patientrow->num_rows ?>
+                                    </div>
+                                </div>
+                                <div style="margin-top: auto; align-self: flex-end; background-color: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa fa-users" style="font-size: 28px; color: #fff;"></i>
+                                </div>
+                            </div>
+
+                            <div style="background-color: #55c3dc; padding: 25px 25px 40px; width: 32%; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 700px;">
+                                <div style="margin-bottom: 30px;">
+                                    <div style="color: #fff; font-size: 22px; font-weight: 500; margin-bottom: 15px;">
+                                        Booking
+                                    </div>
+                                    <div style="color: #fff; font-size: 40px; font-weight: bold;">
+                                        <?php echo $appointmentrow->num_rows ?>
+                                    </div>
+                                </div>
+                                <div style="margin-top: auto; align-self: flex-end; background-color: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa fa-calendar" style="font-size: 28px; color: #fff;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </center>
+    </td>
+</tr>
+</table>
+</div>
+    <script>
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            
+            // Save preference to localStorage
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+        
+        // Check if dark mode was previously enabled
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+            }
+        });
+    </script>
 </body>
 
 </html>

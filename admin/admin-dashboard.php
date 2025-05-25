@@ -397,6 +397,10 @@
                         <thead>
                         <tr>
                             <th class="table-headin">
+                              Profile
+                                
+                                </th>
+                            <th class="table-headin">
                               Student ID
                                 
                                 </th>
@@ -426,11 +430,11 @@
             <tbody class="data">
                 <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
                 <?php
-                $sqlmain = "SELECT id, fname, mname, lname, email, student_id FROM pending_patient WHERE status = 'pending'";
+                $sqlmain = "SELECT id, fname, mname, lname, email, student_id, image FROM pending_patient WHERE status = 'pending'";
                 $result = $database->query($sqlmain);
 
                 if ($result->num_rows === 0) {
-                    echo "<tr><td colspan='6' class='no-data'>No pending registrations.</td></tr>";
+                    echo "<tr><td colspan='7' class='no-data'>No pending registrations.</td></tr>";
                 } else {
                     while ($row = $result->fetch_assoc()) {
                         $id = htmlspecialchars($row['id']);
@@ -439,9 +443,19 @@
                         $lname = htmlspecialchars($row['lname']);
                         $mname = htmlspecialchars($row['mname']);
                         $fname = htmlspecialchars($row['fname']);
-                        /*$fullname = htmlspecialchars($row['fname'] . ' ' . $row['mname']);*/
+                        
+                        // Check if image exists and provide fallback
+                        if (!empty($row["image"]) && file_exists("../uploads/patients/" . $row["image"])) {
+                            $imagePath = "../uploads/patients/" . $row["image"];
+                        } else {
+                            // Use a placeholder image from a public CDN
+                            $imagePath = "https://ui-avatars.com/api/?name=" . urlencode($fname . "+" . $lname) . "&background=random&color=fff&size=128";
+                        }
 
                         echo "<tr>
+                        <td style='text-align: center;'>
+                            <img src='$imagePath' alt='Profile' style='width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;'>
+                        </td>
                         <td>$student_id</td>
                                 <td>$lname</td>
                                 <td>$fname</td>

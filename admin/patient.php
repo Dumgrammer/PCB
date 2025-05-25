@@ -69,6 +69,59 @@
             object-fit: contain;
             opacity: 0.8;
         }
+        
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .container {
+            background-color: #1e1e1e;
+        }
+        
+        body.dark-mode .menu {
+            background-color: #252525;
+        }
+        
+        body.dark-mode .dash-body {
+            background-color: #1e1e1e;
+        }
+        
+        body.dark-mode .menu-text {
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .sub-table {
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .table-headin {
+            background-color: #333;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .popup {
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        
+        body.dark-mode .input-text,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background-color: #333;
+            color: #e0e0e0;
+            border-color: #444;
+        }
+        
+        body.dark-mode .btn-primary {
+            background-color: #0d6efd;
+        }
+        
+        body.dark-mode .non-style-link {
+            color: #e0e0e0;
+        }
     </style>
 </head>
 
@@ -76,7 +129,7 @@
     <?php
 
     //learn from w3schools.com
-
+ 
     session_start();
 
     if (isset($_SESSION["user"])) {
@@ -148,6 +201,19 @@
     </tr>
 
     <tr class="menu-row">
+        <td class="menu-btn menu-icon-doctor">
+            <a href="doctors.php" class="non-style-link-menu">
+                <div>
+                    <p class="menu-text">
+                        <i class="material-symbols-outlined">supervised_user_circle</i>
+                        Staff
+                    </p>
+                </div>
+            </a>
+        </td>
+    </tr>
+
+    <tr class="menu-row">
         <td class="menu-btn menu-icon-appointment">
             <a href="appointment.php" class="non-style-link-menu">
                 <div>
@@ -171,10 +237,11 @@
     </tr>
     <tr class="menu-row">
         <td class="menu-btn menu-icon-settings   ">
-            <a href="#" class="non-style-link-menu">
+            <a href="#" class="non-style-link-menu" onclick="toggleDarkMode(); return false;">
                 <div>
-                    <p class="menu-text"><i class="material-symbols-outlined">settings</i>Settings</p>
-            </a></div>
+                    <p class="menu-text"><i class="material-symbols-outlined">settings</i>Toggle Dark Mode</p>
+                </div>
+            </a>
         </td>
     </tr>
     <tr class="menu-row">
@@ -321,7 +388,10 @@
                 <?php $list112 = $database->query("select  fname,mname ,lname,student_id from pending_patient;");
                 for ($y = 0; $y < $list112->num_rows; $y++) {
                     $row00 = $list112->fetch_assoc();
-                } ?>
+                } 
+
+
+                ?>
 
 
 
@@ -373,9 +443,9 @@
             if ($_POST) {
                 $keyword = $_POST["search"];
 
-                $sqlmain = "select * from patient where pemail='$keyword' or fname='$keyword' or fname like '$keyword%' or fname like '%$keyword' or fname like '%$keyword%' ";
+                $sqlmain = "select *, image from patient where pemail='$keyword' or fname='$keyword' or fname like '$keyword%' or fname like '%$keyword' or fname like '%$keyword%' ";
             } else {
-                $sqlmain = "select * from patient order by pid desc";
+                $sqlmain = "select *, image from patient order by pid desc";
             }
 
 
@@ -390,27 +460,23 @@
                                 <thead>
                                     <tr>
                                         <th class="table-headin">
-
+                                            Profile
+                                        </th>
+                                        <th class="table-headin">
                                             Name
-
-
                                         </th>
                                         <th class="table-headin">
-
-
                                             Student ID
-
                                         </th>
                                         <th class="table-headin">
-
-
+                                            Course
+                                        </th>
+                                        <th class="table-headin">
                                             Date of Birth
-
                                         </th>
                                         <th class="table-headin">
-
                                             Action
-
+                                        </th>
                                     </tr>
 
                                 </thead>
@@ -450,8 +516,19 @@
                                             $student_id = $row["student_id"];
                                             $dob = $row["pdob"];
                                             $tel = $row["ptel"];
+                                            
+                                            // Check if image exists and provide fallback to default
+                                            if (!empty($row["image"]) && file_exists("../uploads/patients/" . $row["image"])) {
+                                                $imagePath = "../uploads/patients/" . $row["image"];
+                                            } else {
+                                                // Use a placeholder image from a public CDN
+                                                $imagePath = "https://ui-avatars.com/api/?name=" . urlencode($fname . "+" . $lname) . "&background=random&color=fff&size=128";
+                                            }
 
                                             echo '<tr>
+                                        <td style="text-align: center; padding: 10px;">
+                                            <img src="' . $imagePath . '" alt="Profile" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;">
+                                        </td>
                                         <td> &nbsp;'
                                                 . substr($lname, 0, 35) . ', '
                                                 . substr($fname, 0, 35) . ' '
@@ -459,6 +536,9 @@
                                                 '</td>
                                         <td>
                                             ' . substr($student_id, 0, 10) . '
+                                        </td>
+                                        <td>
+                                            ' . (isset($row["course"]) ? substr($row["course"], 0, 10) : 'N/A') . '
                                         </td>
                                         <td>
                                         ' . substr($dob, 0, 20) . '
@@ -557,131 +637,304 @@
                     </center>
             </div>
             </div>';
-        } else if($action == 'view') {
-            $sqlmain = "select * from patient where pid='$id'";
-            $result = $database->query($sqlmain);
-            $row = $result->fetch_assoc();
-            $fname = $row["fname"];
-            $mname = $row["mname"];
-            $lname = $row["lname"];
-            $email = $row["pemail"];
-            $pbarangay = $row["pbarangay"];
-            $pcity = $row["pcity"];
-            $pprovince = $row["pprovince"];
-            $student_id = $row["student_id"];
-            $dob = $row["pdob"];
-            $tel = $row["ptel"];
-            echo '
-            <div id="popup1" class="overlay">
-                    <div class="popup">
-                    <center>
-                        <a class="close" href="patient.php">&times;</a>
-                        <div class="content">
-                            <p style="padding: 0;margin: 0;text-align: left;font-size: 25px;font-weight: 500;">View Patient Details.</p><br><br>
-                            <h3>Medicine History</h3>';
-            $histq = $database->query("SELECT h.*, a.apponum FROM history h LEFT JOIN appointment a ON h.appoid = a.appoid WHERE h.pid='$id' ORDER BY h.date_given DESC");
-            echo '<div class="abc scroll">';
-            echo '<table width="90%" class="sub-table scrolldown" border="0">';
-            echo '<thead><tr>';
-            echo '<th class="table-headin">Appointment #</th>';
-            echo '<th class="table-headin">Medicine</th>';
-            echo '<th class="table-headin">Dosage</th>';
-            echo '<th class="table-headin">Instructions</th>';
-            echo '<th class="table-headin">Date Given</th>';
-            echo '</tr></thead>';
-            echo '<tbody>';
-            if ($histq->num_rows == 0) {
-                echo '<tr><td colspan="5" style="text-align: center;">No medicine history found</td></tr>';
-            } else {
-                while($hist = $histq->fetch_assoc()) {
-                    echo '<tr>';
-                    echo '<td>'.htmlspecialchars($hist['apponum']).'</td>';
-                    echo '<td>'.htmlspecialchars($hist['medicine']).'</td>';
-                    echo '<td>'.htmlspecialchars($hist['dosage']).'</td>';
-                    echo '<td>'.htmlspecialchars($hist['instructions']).'</td>';
-                    echo '<td>'.htmlspecialchars($hist['date_given']).'</td>';
-                    echo '</tr>';
-                }
-            }
-            echo '</tbody></table></div><br>';
-            echo '<div style="display: flex;justify-content: center;">
-                            <table width="80%" class="sub-table scrolldown add-doc-form-container" border="0">
-                                
-                                <tr>
-                                    <td>
-                                        <label for="name" class="form-label">Name: </label>
-                                    </td>
-                                    <td>
-                                        ' . $lname . ', ' . $fname . '  ' . $mname . ' <br><br>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label for="pdob" class="form-label">Date of Birth: </label>
-                                    </td>
-                                    <td>
-                                    ' . $dob . '<br><br>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label for="ptel" class="form-label">Mobile Phone Number: </label>
-                                    </td>
-                                    <td>
-                                    ' . $tel . '<br><br>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label for="student_id" class="form-label">Student ID: </label>
-                                    </td>
-                                    <td>
-                                    ' . $student_id . '<br><br>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label for="" class="form-label">Email Address: </label>
-                                        
-                                    </td>
-                                </tr>
-                                <tr>
-                                <td>
-                                 ' . $email . '<br><br>
-                                </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label for="" class="form-label">Address: </label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        ' . $pbarangay . ',  ' . $pcity . ', ' . $pprovince . '<br><br>
-                                    </td>
-                                    
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <a href="patient.php"><input type="button" value="OK" class="login-btn btn-primary-soft btn" ></a>
+        } else if ($action == 'view') {
+    $sqlmain = "SELECT * FROM patient WHERE pid='$id'";
+    $result = $database->query($sqlmain);
 
-                                    <button type="button" class="login-btn btn-primary-soft btn" onclick="window.print();">
-                                            Print
-                                        </button>
-                                        <a href="patient.php?action=drop&id='.$id.'" class="login-btn btn-danger btn" style="margin-left: 10px;">Delete Patient</a>
-                                    </td>
-                
-                                </tr>
-                                
-                            </table>
-                            </div>
-                            <br><br>
+    if ($result && $result->num_rows > 0) {
+        $patient = $result->fetch_assoc();
+
+        // Escape all output to avoid XSS
+        $fname = htmlspecialchars($patient["fname"]);
+        $mname = htmlspecialchars($patient["mname"]);
+        $lname = htmlspecialchars($patient["lname"]);
+        $email = htmlspecialchars($patient["pemail"]);
+        $pbarangay = htmlspecialchars($patient["pbarangay"]);
+        $pcity = htmlspecialchars($patient["pcity"]);
+        $pprovince = htmlspecialchars($patient["pprovince"]);
+        $student_id = htmlspecialchars($patient["student_id"]);
+        $dob = htmlspecialchars($patient["pdob"]);
+        $tel = htmlspecialchars($patient["ptel"]);
+
+        // Image path with fallback
+        if (!empty($patient['image']) && file_exists('../uploads/patients/' . $patient['image'])) {
+            $imagePath = '../uploads/patients/' . htmlspecialchars($patient['image']);
+        } else {
+            // Use a placeholder image from a public CDN
+            $imagePath = "https://ui-avatars.com/api/?name=" . urlencode($fname . "+" . $lname) . "&background=random&color=fff&size=128";
+        }
+
+        // Success message if medicine was added
+        $successMessage = '';
+        if (isset($_GET['status']) && $_GET['status'] == 'medicine_added') {
+            $successMessage = '<div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
+                Medicine added successfully!
+            </div>';
+        }
+
+        // Error message if there was an error
+        $errorMessage = '';
+        if (isset($_GET['error'])) {
+            $errorMessage = '<div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
+                Error: ' . htmlspecialchars($_GET['error']) . '
+            </div>';
+        }
+
+        echo '
+        <div id="popup1" class="overlay" style="
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        ">
+            <div class="popup" style="
+                background: #fff;
+                border-radius: 10px;
+                width: 90%;
+                max-width: 700px;
+                max-height: 85vh;
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 0 15px rgba(0,0,0,0.3);
+                position: relative;
+                overflow: hidden;
+                font-family: Arial, sans-serif;
+                color: #333;
+            ">
+                <a class="close" href="patient.php" style="
+                    position: absolute;
+                    top: 15px;
+                    right: 20px;
+                    font-size: 28px;
+                    text-decoration: none;
+                    color: #aaa;
+                    z-index: 10;
+                ">&times;</a>
+                <h2 style="text-align:center; margin: 20px 0 10px;">Patient Details</h2>
+
+                <div class="content" style="
+                    padding: 0 20px 20px 20px;
+                    overflow-y: auto;
+                    flex: 1;
+                ">
+                    ' . $successMessage . '
+                    ' . $errorMessage . '
+                    <div style="display: flex; align-items: flex-start; gap: 25px; margin-bottom: 25px;">
+                        <div style="flex: 1; font-size: 15px; line-height: 1.5;">
+                            <p><strong>Full Name:</strong> ' . $fname . ' ' . $mname . ' ' . $lname . '</p>
+                            <p><strong>Student ID:</strong> ' . $student_id . '</p>
+                            <p><strong>Course:</strong> ' . (isset($patient['course']) ? $patient['course'] : 'Not specified') . '</p>
+                            <p><strong>Email:</strong> ' . $email . '</p>
+                            <p><strong>Date of Birth:</strong> ' . $dob . '</p>
+                            <p><strong>Contact Number:</strong> ' . $tel . '</p>
+                            <p><strong>Address:</strong> ' . $pbarangay . ', ' . $pcity . ', ' . $pprovince . '</p>
                         </div>
-                    </center>
-                    <br><br>
+                        <div style="flex-shrink: 0; width: 220px; height: 220px; border: 1px solid #ccc; border-radius: 8px; overflow: hidden;">
+                            <img src="' . $imagePath . '" alt="Patient Image" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                    </div>
+
+            <!-- Medicine History Table -->
+            <h3 style="margin-bottom: 15px; border-bottom: 2px solid #007BFF; padding-bottom: 5px;">Medicine History</h3>
+            <div class="abc scroll" style="max-height: 220px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 20px;">
+                <table width="100%" class="sub-table scrolldown" border="0" cellspacing="0" cellpadding="8" style="border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr style="background-color: #f0f8ff;">
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Medicine</th>
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Dosage</th>
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Instructions</th>
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Date Given</th>
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Appointment</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+
+    // Fixed query - now using pid instead of appoid
+    $histq = $database->query("
+        SELECT h.*, DATE_FORMAT(a.appodate, '%Y-%m-%d') as appointment_date, a.apponum
+        FROM history h 
+        LEFT JOIN appointment a ON h.appoid = a.appoid 
+        WHERE h.pid = '$id'
+        ORDER BY h.date_given DESC
+    ");
+    
+    if ($histq->num_rows == 0) {
+        echo '<tr><td colspan="5" style="text-align: center; padding: 15px;">No medicine history found for this patient</td></tr>';
+    } else {
+        while($hist = $histq->fetch_assoc()) {
+            echo '<tr style="border-bottom: 1px solid #eee;">
+                    <td>'.htmlspecialchars($hist['medicine']).'</td>
+                    <td>'.htmlspecialchars($hist['dosage']).'</td>
+                    <td>'.htmlspecialchars($hist['instructions']).'</td>
+                    <td>'.htmlspecialchars($hist['date_given']).'</td>
+                    <td>'.htmlspecialchars((!empty($hist['appointment_date']) ? $hist['appointment_date'] . ' (#' . $hist['apponum'] . ')' : 'Unknown')).'</td>
+                </tr>';
+        }
+    }
+    echo '
+                    </tbody>
+                </table>
             </div>
+
+            <!-- Add Medicine Form -->
+            <div class="add-medicine-section">
+            <h4 style="margin-top: 10px; margin-bottom: 12px;">Add Medicine to History</h4>
+            <form action="add-history.php" method="POST" class="add-new-form" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+                <input type="hidden" name="pid" value="'.htmlspecialchars($id).'">
+                
+                <label for="appoid" style="flex: 1 1 200px; min-width: 180px;">Appointment:<br>
+                    <select name="appoid" id="appoid" required style="width: 100%; padding: 6px; margin-top: 4px;">
+                        <option value="" disabled selected>Select Appointment</option>';
+
+    // Get patient's appointments
+    $appQuery = $database->query("SELECT * FROM appointment WHERE pid='$id' ORDER BY appodate DESC");
+    if ($appQuery->num_rows > 0) {
+        while($app = $appQuery->fetch_assoc()) {
+            echo '<option value="'.htmlspecialchars($app['appoid']).'">'.
+                htmlspecialchars(date('Y-m-d', strtotime($app['appodate']))).' (#'.htmlspecialchars($app['apponum']).')'.
+                '</option>';
+        }
+    }
+    echo '
+                    </select>
+                </label>
+                
+                <label for="medicine" style="flex: 1 1 200px; min-width: 180px;">Medicine:<br>
+                    <select name="medicine" id="medicine" required style="width: 100%; padding: 6px; margin-top: 4px;">
+                        <option value="" disabled selected>Select Medicine</option>';
+
+    $medlist = $database->query("SELECT * FROM medicine ORDER BY brand ASC");
+    while($med = $medlist->fetch_assoc()) {
+        $brand = htmlspecialchars($med['brand']);
+        echo '<option value="'.$brand.'">'.$brand.'</option>';
+    }
+    echo '
+                    </select>
+                </label>
+                <label for="dosage" style="flex: 1 1 150px; min-width: 140px;">Dosage:<br>
+                    <input type="text" name="dosage" id="dosage" placeholder="Dosage" required style="width: 100%; padding: 6px; margin-top: 4px;">
+                </label>
+                <label for="instructions" style="flex: 1 1 250px; min-width: 200px;">Instructions:<br>
+                    <input type="text" name="instructions" id="instructions" placeholder="Instructions" required style="width: 100%; padding: 6px; margin-top: 4px;">
+                </label>
+                <div style="flex: 0 0 auto; margin-top: 24px;">
+                    <button type="submit" class="btn-primary btn" style="padding: 8px 18px; cursor: pointer;">Add Medicine</button>
+                </div>
+            </form>
             </div>
-            ';
+
+            <!-- Medical Certificate Section -->
+            <h4 style="margin-top: 40px; margin-bottom: 12px;">Medical Certificate Details</h4>
+            <form id="medcert-details-form" style="margin-bottom: 20px;">
+                <textarea name="cert_reason" rows="3" style="width: 100%; padding: 8px; font-size: 14px; resize: vertical; margin-bottom: 12px;" placeholder="Reason for certificate (doctor input)"></textarea>
+                <textarea name="cert_validity" rows="1" style="width: 100%; padding: 8px; font-size: 14px; resize: vertical;" placeholder="Validity period (e.g. 7 days)"></textarea>
+            </form>
+
+           
+
+            <div style="text-align: center;">
+             <button onclick="printPopup()" class="btn-primary btn" style="padding: 10px 22px; margin-bottom: 25px; cursor: pointer;">Print Medical Certificate</button>
+                <a href="delete-appointment.php?id='.$id.'" class="btn-danger btn" style="display: inline-block; padding: 10px 24px; background: #dc3545; color: #fff; border-radius: 5px; text-decoration: none; font-weight: 600;">Remove Appointment</a>
+            </div>
+        </div>
+    </div>
+</div>';
+
+/* PRINT STYLES - expand all scrollable content and center popup on page */
+echo '<style>
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+    .popup, .popup * {
+        visibility: visible !important;
+    }
+    .popup {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 90% !important;
+        max-width: none !important;
+        max-height: none !important;
+        height: auto !important;
+        overflow: visible !important;
+        background: #fff !important;
+        box-shadow: none !important;
+        padding: 20px !important;
+        font-size: 14pt !important;
+        color: #000 !important;
+        border-radius: 0 !important;
+        display: block !important;
+    }
+    .popup .content {
+        overflow: visible !important;
+        max-height: none !important;
+        height: auto !important;
+    }
+    .abc.scroll {
+        overflow: visible !important;
+        max-height: none !important;
+        height: auto !important;
+    }
+    
+    /* Hide buttons and navigation elements */
+    .close, .btn-danger, .btn-primary {
+        display: none !important;
+    }
+    
+    /* Specifically hide Add Medicine section */
+    .add-medicine-section {
+        display: none !important;
+    }
+    
+    /* Clean format for printing */
+    #medcert-details-form {
+        margin-top: 30px !important;
+        border-top: 1px solid #ccc !important;
+        padding-top: 20px !important;
+    }
+    
+    #medcert-details-form textarea {
+        border: none !important;
+        font-size: 14pt !important;
+        font-family: inherit !important;
+        padding: 0 !important;
+        resize: none !important;
+        background: transparent !important;
+    }
+    
+    /* Format for the certificate details */
+    .certificate-section {
+        margin-top: 30px !important;
+        text-align: left !important;
+    }
+    
+    /* Clean table format */
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-bottom: 20px !important;
+    }
+    
+    th, td {
+        padding: 8px !important;
+        text-align: left !important;
+        border-bottom: 1px solid #ddd !important;
+    }
+    
+    th {
+        font-weight: bold !important;
+    }
+}
+</style>';
+
+/* Print function */
+echo '<script>function printPopup() { window.print(); }</script>';
+
         } else if($action == 'drop' && isset($_GET['id'])) {
             $id = $_GET['id'];
             if (isset($_GET['confirm']) && $_GET['confirm'] == 'yes') {
@@ -709,10 +962,30 @@
                 exit();
             }
         }
-    }
+    }}  
 
     ?>
     </div>
+    <script>
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            
+            // Save preference to localStorage
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+        
+        // Check if dark mode was previously enabled
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -76,7 +76,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'drop' && isset($_GET['id'])) {
             margin-left: 250px;
             width: calc(100% - 250px);
         }
-
     </style>
 </head>
 <body>
@@ -379,78 +378,294 @@ if (isset($_GET['action']) && $_GET['action'] == 'drop' && isset($_GET['id'])) {
             $pid = $app['pid'];
             $pquery = $database->query("SELECT * FROM patient WHERE pid='$pid'");
             $patient = $pquery->fetch_assoc();
-            echo '<div id="popup1" class="overlay">
-                <div class="popup">
-                <center>
-                    <h2>Appointment Details</h2>
-                    <a class="close" href="appointment.php">&times;</a>
-                    <div class="content">
-                        <b>Patient:</b> '.htmlspecialchars($patient['fname'].' '.$patient['lname']).'<br>
-                        <b>Appointment Number:</b> '.htmlspecialchars($app['apponum']).'<br>
-                        <b>Date:</b> '.htmlspecialchars($app['appodate']).'<br>
-                        <b>Reason:</b> '.htmlspecialchars($app['reason']).'<br>
-                    </div>';
-            // Medicine History Table (styled like medicine.php)
-            echo '<h3>Medicine History</h3>';
-            echo '<div class="abc scroll">';
-            echo '<table width="90%" class="sub-table scrolldown" border="0">';
-            echo '<thead><tr>';
-            echo '<th class="table-headin">Medicine</th>';
-            echo '<th class="table-headin">Dosage</th>';
-            echo '<th class="table-headin">Instructions</th>';
-            echo '<th class="table-headin">Date Given</th>';
-            echo '</tr></thead>';
-            echo '<tbody>';
+            
+            // Success message if medicine was added
+            $successMessage = '';
+            if (isset($_GET['status']) && $_GET['status'] == 'success') {
+                $successMessage = '<div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
+                    Medicine added successfully!
+                </div>';
+            }
+
+            // Error message if there was an error
+            $errorMessage = '';
+            if (isset($_GET['error'])) {
+                $errorMessage = '<div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
+                    Error: ' . htmlspecialchars($_GET['error']) . '
+                </div>';
+            }
+            
+            echo '<div id="popup1" class="overlay" style="
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            ">
+                <div class="popup" style="
+                    background: #fff;
+                    border-radius: 10px;
+                    width: 90%;
+                    max-width: 700px;
+                    max-height: 85vh;
+                    display: flex;
+                    flex-direction: column;
+                    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+                    position: relative;
+                    overflow: hidden;
+                    font-family: Arial, sans-serif;
+                    color: #333;
+                ">
+                    <a class="close" href="appointment.php" style="
+                        position: absolute;
+                        top: 15px;
+                        right: 20px;
+                        font-size: 28px;
+                        text-decoration: none;
+                        color: #aaa;
+                        z-index: 10;
+                    ">&times;</a>
+                    <h2 style="text-align:center; margin: 20px 0 10px;">Appointment Details</h2>
+
+                    <div class="content" style="
+                        padding: 0 20px 20px 20px;
+                        overflow-y: auto;
+                        flex: 1;
+                    ">';
+                    
+                    // Check if patient has an image and display it
+                    if (!empty($patient['image']) && file_exists('../uploads/patients/' . $patient['image'])) {
+                        $imagePath = '../uploads/patients/' . htmlspecialchars($patient['image']);
+                    } else {
+                        // Use a placeholder image from a public CDN
+                        $imagePath = "https://ui-avatars.com/api/?name=" . urlencode($patient['fname'] . "+" . $patient['lname']) . "&background=random&color=fff&size=128";
+                    }
+                    
+                    echo '
+                        ' . $successMessage . '
+                        ' . $errorMessage . '
+                        <div style="display: flex; align-items: flex-start; gap: 25px; margin-bottom: 25px;">
+                            <div style="flex: 1; font-size: 15px; line-height: 1.5;">
+                                <p><strong>Patient:</strong> '.htmlspecialchars($patient['fname'].' '.$patient['mname'].' '.$patient['lname']).'</p>
+                                <p><strong>Student ID:</strong> '.htmlspecialchars($patient['student_id']).'</p>
+                                <p><strong>Appointment Number:</strong> '.htmlspecialchars($app['apponum']).'</p>
+                                <p><strong>Date:</strong> '.htmlspecialchars($app['appodate']).'</p>
+                                <p><strong>Reason:</strong> '.htmlspecialchars($app['reason']).'</p>
+                            </div>
+                            <div style="flex-shrink: 0; width: 220px; height: 220px; border: 1px solid #ccc; border-radius: 8px; overflow: hidden;">
+                                <img src="' . $imagePath . '" alt="Patient Image" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                        </div>
+                        
+                        <center>';
+            
+            // Current Appointment Medicine History Table
+            echo '<h3 style="margin-bottom: 15px; border-bottom: 2px solid #007BFF; padding-bottom: 5px;">Current Appointment Medicine History</h3>
+            <div class="abc scroll" style="max-height: 220px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 20px;">
+                <table width="100%" class="sub-table scrolldown" border="0" cellspacing="0" cellpadding="8" style="border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr style="background-color: #f0f8ff;">
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Medicine</th>
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Dosage</th>
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Instructions</th>
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Date Given</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+            
             $histq = $database->query("SELECT * FROM history WHERE appoid='$id' ORDER BY date_given DESC");
             if ($histq->num_rows == 0) {
-                echo '<tr><td colspan="4" style="text-align: center;">No medicine history found</td></tr>';
+                echo '<tr><td colspan="4" style="text-align: center; padding: 15px;">No medicine history found for this appointment</td></tr>';
             } else {
                 while($hist = $histq->fetch_assoc()) {
-                    echo '<tr>';
-                    echo '<td>'.htmlspecialchars($hist['medicine']).'</td>';
-                    echo '<td>'.htmlspecialchars($hist['dosage']).'</td>';
-                    echo '<td>'.htmlspecialchars($hist['instructions']).'</td>';
-                    echo '<td>'.htmlspecialchars($hist['date_given']).'</td>';
-                    echo '</tr>';
+                    echo '<tr style="border-bottom: 1px solid #eee;">
+                        <td>'.htmlspecialchars($hist['medicine']).'</td>
+                        <td>'.htmlspecialchars($hist['dosage']).'</td>
+                        <td>'.htmlspecialchars($hist['instructions']).'</td>
+                        <td>'.htmlspecialchars($hist['date_given']).'</td>
+                    </tr>';
                 }
             }
             echo '</tbody></table></div>';
 
-            // Redo Add Medicine to History Form (pure HTML, no JS, no onsubmit)
-            echo '<h4>Add Medicine to History</h4>';
+            // Patient's Full Medicine History (All Appointments)
+            echo '<h3 style="margin-bottom: 15px; border-bottom: 2px solid #007BFF; padding-bottom: 5px;">Patient\'s Complete Medicine History</h3>
+            <div class="abc scroll" style="max-height: 220px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 20px;">
+                <table width="100%" class="sub-table scrolldown" border="0" cellspacing="0" cellpadding="8" style="border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr style="background-color: #f0f8ff;">
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Medicine</th>
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Dosage</th>
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Instructions</th>
+                            <th style="border-bottom: 1px solid #ccc; text-align: left;">Date Given</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+            
+            $patient_histq = $database->query("
+                SELECT h.*, a.reason as appointment_reason, s.title as schedule_title
+                FROM history h 
+                LEFT JOIN appointment a ON h.appoid = a.appoid 
+                LEFT JOIN schedule s ON a.scheduleid = s.scheduleid
+                WHERE h.pid = '{$pid}'
+                ORDER BY h.date_given DESC
+            ");
+            
+            if ($patient_histq->num_rows == 0) {
+                echo '<tr><td colspan="4" style="text-align: center; padding: 15px;">No medicine history found for this patient</td></tr>';
+            } else {
+                while($hist = $patient_histq->fetch_assoc()) {
+                    $isCurrentAppt = ($hist['appoid'] == $id) ? ' style="background-color: #f8f8ff; font-weight: bold;"' : ' style="border-bottom: 1px solid #eee;"';
+                    
+                    echo '<tr'.$isCurrentAppt.'>
+                        <td>'.htmlspecialchars($hist['medicine']).'</td>
+                        <td>'.htmlspecialchars($hist['dosage']).'</td>
+                        <td>'.htmlspecialchars($hist['instructions']).'</td>
+                        <td>'.htmlspecialchars($hist['date_given']).'</td>
+                    </tr>';
+                }
+            }
+            echo '</tbody></table></div>';
+
+            // Add Medicine Form
+            echo '<div class="add-medicine-section">';
+            echo '<h4 style="margin-top: 10px; margin-bottom: 12px;" class="medicine-form-heading">Add Medicine to History</h4>
+            <form action="add-history.php" method="POST" class="add-new-form" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+                <input type="hidden" name="appoid" value="'.htmlspecialchars($id).'">
+                <input type="hidden" name="pid" value="'.htmlspecialchars($pid).'">
+                <label for="medicine" style="flex: 1 1 200px; min-width: 180px;">Medicine:<br>
+                    <select name="medicine" id="medicine" required style="width: 100%; padding: 6px; margin-top: 4px;">
+                        <option value="" disabled selected>Select Medicine</option>';
+            
             $medlist = $database->query("SELECT * FROM medicine ORDER BY brand ASC");
-            echo '<form action="add-history.php" method="POST" class="add-new-form" style="margin-top:12px;">';
-            echo '<input type="hidden" name="appoid" value="'.htmlspecialchars($id).'">';
-            echo '<input type="hidden" name="pid" value="'.htmlspecialchars($pid).'">';
-            echo '<label for="medicine">Medicine:</label> ';
-            echo '<select name="medicine" id="medicine" required style="margin-right:8px;">';
-            echo '<option value="" disabled selected>Select Medicine</option>';
             while($med = $medlist->fetch_assoc()) {
                 $brand = htmlspecialchars($med['brand']);
                 echo '<option value="'.$brand.'">'.$brand.'</option>';
             }
-            echo '</select> ';
-            echo '<label for="dosage">Dosage:</label> ';
-            echo '<input type="text" name="dosage" id="dosage" placeholder="Dosage" required style="margin-right:8px;"> ';
-            echo '<label for="instructions">Instructions:</label> ';
-            echo '<input type="text" name="instructions" id="instructions" placeholder="Instructions" required style="margin-right:8px;"> ';
-            echo '<button type="submit" class="btn-primary btn">Add Medicine</button>';
-            echo '</form>';
+            echo '</select>
+                </label>
+                <label for="dosage" style="flex: 1 1 150px; min-width: 140px;">Dosage:<br>
+                    <input type="text" name="dosage" id="dosage" placeholder="Dosage" required style="width: 100%; padding: 6px; margin-top: 4px;">
+                </label>
+                <label for="instructions" style="flex: 1 1 250px; min-width: 200px;">Instructions:<br>
+                    <input type="text" name="instructions" id="instructions" placeholder="Instructions" required style="width: 100%; padding: 6px; margin-top: 4px;">
+                </label>
+                <div style="flex: 0 0 auto; margin-top: 24px;">
+                    <button type="submit" class="btn-primary btn" style="padding: 8px 18px; cursor: pointer;">Add Medicine</button>
+                </div>
+            </form>';
+            echo '</div>';
 
             // Add textareas for cert reason and validity
-            echo '<h4>Medical Certificate Details</h4>';
-            echo '<form id="medcert-details-form" style="margin-bottom:16px;">';
-            echo '<textarea name="cert_reason" rows="2" style="width:90%;margin-bottom:8px;" placeholder="Reason for certificate (doctor input)"></textarea><br>';
-            echo '<textarea name="cert_validity" rows="1" style="width:90%;margin-bottom:8px;" placeholder="Validity period (e.g. 7 days)"></textarea>';
-            echo '</form>';
+            echo '<h4 style="margin-top: 40px; margin-bottom: 12px;">Medical Certificate Details</h4>
+            <form id="medcert-details-form" style="margin-bottom: 20px;">
+                <textarea name="cert_reason" rows="3" style="width: 100%; padding: 8px; font-size: 14px; resize: vertical; margin-bottom: 12px;" placeholder="Reason for certificate (doctor input)"></textarea>
+                <textarea name="cert_validity" rows="1" style="width: 100%; padding: 8px; font-size: 14px; resize: vertical;" placeholder="Validity period (e.g. 7 days)"></textarea>
+            </form>';
 
-            // Print Med Cert Button (prints popup only)
-            echo '<br><button onclick="printPopup()" class="btn-primary btn">Print Medical Certificate</button>';
-            echo '<style>@media print { body * { visibility: hidden !important; } .popup, .popup * { visibility: visible !important; } .popup { position: absolute !important; left: 0; top: 0; width: 100vw !important; background: #fff !important; box-shadow: none !important; } .close, .btn-danger, .btn-primary { display: none !important; } }</style>';
+            // Print and remove buttons
+            echo '<div style="text-align: center;">
+                <button onclick="printPopup()" class="btn-primary btn" style="padding: 10px 22px; margin-bottom: 25px; cursor: pointer;">Print Medical Certificate</button>
+                <a href="delete-appointment.php?id='.$id.'" class="btn-danger btn" style="display: inline-block; padding: 10px 24px; background: #dc3545; color: #fff; border-radius: 5px; text-decoration: none; font-weight: 600;">Remove Appointment</a>
+            </div>';
+            
+            // Print styles
+            echo '<style>
+            @media print {
+                body * {
+                    visibility: hidden !important;
+                }
+                .popup, .popup * {
+                    visibility: visible !important;
+                }
+                .popup {
+                    position: fixed !important;
+                    top: 50% !important;
+                    left: 50% !important;
+                    transform: translate(-50%, -50%) !important;
+                    width: 90% !important;
+                    max-width: none !important;
+                    max-height: none !important;
+                    height: auto !important;
+                    overflow: visible !important;
+                    background: #fff !important;
+                    box-shadow: none !important;
+                    padding: 20px !important;
+                    font-size: 14pt !important;
+                    color: #000 !important;
+                    border-radius: 0 !important;
+                    display: block !important;
+                }
+                .popup .content {
+                    overflow: visible !important;
+                    max-height: none !important;
+                    height: auto !important;
+                }
+                .abc.scroll {
+                    overflow: visible !important;
+                    max-height: none !important;
+                    height: auto !important;
+                }
+                
+                /* Hide buttons and navigation elements */
+                .close, .btn-danger, .btn-primary {
+                    display: none !important;
+                }
+                
+                /* Specifically hide Add Medicine section */
+                .add-medicine-section {
+                    display: none !important;
+                }
+                
+                /* Keep the medical certificate details heading */
+                h4:not(:contains("Medical Certificate Details")) {
+                    display: none !important;
+                }
+                
+                /* Clean format for printing */
+                #medcert-details-form {
+                    margin-top: 30px !important;
+                    border-top: 1px solid #ccc !important;
+                    padding-top: 20px !important;
+                }
+                
+                #medcert-details-form textarea {
+                    border: none !important;
+                    font-size: 14pt !important;
+                    font-family: inherit !important;
+                    padding: 0 !important;
+                    resize: none !important;
+                    background: transparent !important;
+                }
+                
+                /* Format for the certificate details */
+                .certificate-section {
+                    margin-top: 30px !important;
+                    text-align: left !important;
+                }
+                
+                /* Clean table format */
+                table {
+                    width: 100% !important;
+                    border-collapse: collapse !important;
+                    margin-bottom: 20px !important;
+                }
+                
+                th, td {
+                    padding: 8px !important;
+                    text-align: left !important;
+                    border-bottom: 1px solid #ddd !important;
+                }
+                
+                th {
+                    font-weight: bold !important;
+                }
+            }
+            </style>';
             echo '<script>function printPopup() { window.print(); }</script>';
-            // Remove Appointment Button
-            echo '<br><br><a href="delete-appointment.php?id='.$id.'" class="btn-danger btn">Remove Appointment</a>';
-            echo '</center></div></div>';
+            echo '</center></div></div></div>';
         }
     }
 

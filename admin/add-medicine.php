@@ -2,69 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<meta name="author" content="Mayuri K">
+    <meta name="author" content="Mayuri K">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/animations.css">  
     <link rel="stylesheet" href="../css/main.css">  
     <link rel="stylesheet" href="../css/admin.css">
         
-    <title>Doctor</title>
+    <title>Add Medicine</title>
     <style>
         .popup{
             animation: transitionIn-Y-bottom 0.5s;
         }
-</style>
+    </style>
 </head>
 <body>
     <?php
-
-    //learn from w3schools.com
-
     session_start();
 
     if(isset($_SESSION["user"])){
         if(($_SESSION["user"])=="" or $_SESSION['usertype']!='a'){
             header("location: ../login.php");
         }
-
     }else{
         header("location: ../login.php");
     }
     
-    
-
     //import database
     include("../connection.php");
 
-    $error = 0;
-
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $appoid = $_POST['appoid'];
-        $medicine = $_POST['medicine'];
+        $brand = $_POST['brand'];
+        $generic_name = $_POST['generic_name'];
+        $quantity = $_POST['quantity'];
         $dosage = $_POST['dosage'];
-        $instructions = $_POST['instructions'];
+        $expiration_date = $_POST['expiration_date'];
 
-        // Get patient ID from appointment
-        $appq = $database->query("SELECT pid FROM appointment WHERE appoid='$appoid'");
-        $app = $appq->fetch_assoc();
-        $pid = $app['pid'];
-
-        // Insert into history table
-        $sql = "INSERT INTO history (appoid, pid, medicine, dosage, instructions, date_given) 
-                VALUES ('$appoid', '$pid', '$medicine', '$dosage', '$instructions', NOW())";
+        // Insert into medicine table
+        $sql = "INSERT INTO medicine (brand, generic_name, quantity, dosage, expiration_date) 
+                VALUES ('$brand', '$generic_name', '$quantity', '$dosage', '$expiration_date')";
         
         if ($database->query($sql)) {
-            header("Location: appointment.php?action=view&id=$appoid&status=success");
+            header("Location: medicine.php?action=add&error=4");
         } else {
-            header("Location: appointment.php?action=view&id=$appoid&error=" . urlencode($database->error));
+            header("Location: medicine.php?action=add&error=3");
         }
         exit;
     } else {
-        header("Location: appointment.php");
+        header("Location: medicine.php");
         exit;
     }
-
     ?>
     
 

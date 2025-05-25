@@ -32,80 +32,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // If approved, migrate user to patient table
     if ($action === 'approve') {
+    // Select including image column (assuming column name is `image`)
+    $stmt = $database->prepare("
+        SELECT fname, mname, lname, email, password, pdob, ptel, student_id, pbarangay, pprovince, pcity, image, course
+        FROM pending_patient WHERE id = ?
+    ");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $userData = $result->fetch_assoc();
+    $stmt->close();
+
+    if ($userData) {
+        $fname = $userData['fname'] ?? '';
+        $mname = $userData['mname'] ?? '';
+        $lname = $userData['lname'] ?? '';
+        $email = $userData['email'] ?? '';
+        $password = $userData['password'] ?? '';
+        $dob = $userData['pdob'] ?? '';
+        $ptel = $userData['ptel'] ?? '';
+        $student_id = !empty($userData['student_id']) ? $userData['student_id'] : 'N/A';
+        $barangay = $userData['pbarangay'] ?? '';
+        $province = $userData['pprovince'] ?? '';
+        $city = $userData['pcity'] ?? '';
+        $image = $userData['image'] ?? NULL; // Assuming image stored as filename or blob
+        $course = $userData['course'] ?? ''; // Get course data
+
+        // Insert into patient including image
         $stmt = $database->prepare("
-            SELECT fname, mname, lname, email, password, pdob, ptel, student_id, pbarangay, pprovince, pcity 
-            FROM pending_patient WHERE id = ?
+            INSERT INTO patient (
+                fname, mname, lname, pemail, ppassword, pdob, ptel, student_id, 
+                pbarangay, pprovince, pcity, image, course
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $userData = $result->fetch_assoc();
-        $stmt->close();
+        $stmt->bind_param(
+            "sssssssssssss",
+            $fname, $mname, $lname, $email, $password, $dob, $ptel,
+            $student_id, $barangay, $province, $city, $image, $course
+        );
 
-        if ($userData) {
-            // Ensure no empty fields
-            $fname = $userData['fname'] ?? '';
-            $mname = $userData['mname'] ?? '';
-            $lname = $userData['lname'] ?? '';
-            $email = $userData['email'] ?? '';
-            $password = $userData['password'] ?? '';
-            $dob = $userData['pdob'] ?? '';
-            $ptel = $userData['ptel'] ?? '';
-            $student_id = !empty($userData['student_id']) ? $userData['student_id'] : 'N/A';
-            $barangay = $userData['pbarangay'] ?? '';
-            $province = $userData['pprovince'] ?? '';
-            $city = $userData['pcity'] ?? '';
+        if ($stmt->execute()) {
+            $stmt->close();
 
-            // Insert into patient
-            $stmt = $database->prepare("
-                INSERT INTO patient (
-                    fname, mname, lname, pemail, ppassword, pdob, ptel, student_id, 
-                    pbarangay, pprovince, pcity
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ");
-            $stmt->bind_param(
-                "sssssssssss",
-                $fname, $mname, $lname, $email, $password, $dob, $ptel,
-                $student_id, $barangay, $province, $city
-            );
+            // Check if webuser exists
+            $stmt = $database->prepare("SELECT * FROM webuser WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-            if ($stmt->execute()) {
-                $stmt->close();
-
-                // Check if webuser exists
-                $stmt = $database->prepare("SELECT * FROM webuser WHERE email = ?");
-                $stmt->bind_param("s", $email);
-                $stmt->execute();
-                $result = $stmt->get_result();
-
-                if ($result->num_rows === 0) {
-                    $stmt_insert = $database->prepare("INSERT INTO webuser (email, usertype) VALUES (?, 'p')");
-                    $stmt_insert->bind_param("s", $email);
-                    $stmt_insert->execute();
-                    $stmt_insert->close();
-                }
-                $stmt->close();
-
-                // Delete from pending_patient
-                $stmt = $database->prepare("DELETE FROM pending_patient WHERE id = ?");
-                $stmt->bind_param("i", $userId);
-                $stmt->execute();
-                $stmt->close();
-
-                echo "User approved and successfully registered. A confirmation email has been sent.";
-            } else {
-                echo "Error inserting into patient table: " . $stmt->error;
-                $stmt->close();
-                exit;
+            if ($result->num_rows === 0) {
+                $stmt_insert = $database->prepare("INSERT INTO webuser (email, usertype) VALUES (?, 'p')");
+                $stmt_insert->bind_param("s", $email);
+                $stmt_insert->execute();
+                $stmt_insert->close();
             }
+            $stmt->close();
+
+            // Delete from pending_patient
+            $stmt = $database->prepare("DELETE FROM pending_patient WHERE id = ?");
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $stmt->close();
+
+            echo "User approved and successfully registered. A confirmation email has been sent.";
         } else {
-            echo "User data not found.";
+            echo "Error inserting into patient table: " . $stmt->error;
+            $stmt->close();
             exit;
         }
     } else {
-        echo "User status updated to declined.";
+        echo "User data not found.";
+        exit;
     }
-
+} else {
+    echo "User status updated to declined.";
+}
 
 $database->close();
 
